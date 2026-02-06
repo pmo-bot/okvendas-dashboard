@@ -57,6 +57,50 @@ body{
 
 .container{max-width:1400px;margin:auto}
 
+/* Banner de Erro de Conexão */
+.connection-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #ef4444;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: none;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.connection-error.show {
+  display: flex;
+}
+
+.connection-error i {
+  font-size: 24px;
+  color: #dc2626;
+}
+
+.connection-error-content h3 {
+  color: #991b1b;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.connection-error-content p {
+  color: #7f1d1d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.connection-error-content code {
+  background: #991b1b;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
 header{
   display:flex;
   justify-content:space-between;
@@ -254,7 +298,6 @@ header span{
   gap: 8px;
 }
 
-/* NOVO: Estilo para o ícone de info da Curva S */
 .info-icon {
   cursor: help;
   color: var(--blue);
@@ -287,265 +330,216 @@ header span{
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   z-index: 1000;
   line-height: 1.5;
-  max-width: 300px;
-  white-space: normal;
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--text);
 }
 
 .info-icon:hover .tooltip {
   opacity: 1;
 }
 
-.chart-select {
-  padding: 8px 14px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  background: white;
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 150px;
-}
-
-.chart-select:hover {
-  border-color: var(--blue);
-}
-
-.chart-select:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-}
-
-.chart-info {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: #f8fafc;
+.curva-info {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4px solid var(--blue);
+  padding: 12px 16px;
   border-radius: 8px;
-  display: none;
-}
-
-.chart-info.show {
-  display: block;
-}
-
-.chart-info strong {
+  margin-top: 12px;
+  font-size: 12px;
   color: var(--text);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+}
+
+.curva-info.show {
+  display: flex;
 }
 
 .semaforo-indicator {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  margin-right: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
 }
 
-.semaforo-verde {
-  background-color: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+.semaforo-verde { background: #10b981; }
+.semaforo-amarelo { background: #f59e0b; }
+.semaforo-vermelho { background: #ef4444; }
+
+.chart-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.semaforo-amarelo {
-  background-color: #f59e0b;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+.chart-filter label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
 }
 
-.semaforo-vermelho {
-  background-color: #ef4444;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+.chart-filter select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--panel);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chart-filter select:hover {
+  border-color: var(--blue);
+}
+
+.chart-filter select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
 .chart-canvas {
   flex: 1;
+  min-height: 0;
   position: relative;
 }
 
-.table-panel{
-  background:var(--panel);
-  border-radius:18px;
-  padding:24px;
-  box-shadow:var(--shadow);
+.project-table {
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.table-title {
-  font-size: 18px;
+.project-table h2 {
+  font-size: 16px;
   font-weight: 700;
+  margin-bottom: 20px;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.search-container {
-  position: relative;
+.project-table h2 i {
+  color: var(--blue);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+table {
   width: 100%;
-  max-width: 350px;
-}
-
-.search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 14px;
-}
-
-#searchBox {
-  width: 100%;
-  padding: 10px 14px 10px 40px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
+  border-collapse: collapse;
   font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
 }
 
-#searchBox:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
-}
-
-thead{
-  background:#f8fafc;
+thead {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-th{
-  padding:14px 16px;
-  text-align:left;
-  font-weight:700;
-  color:var(--text);
-  text-transform:uppercase;
-  font-size:11px;
-  letter-spacing:0.5px;
+thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
   border-bottom: 2px solid var(--border);
 }
 
-td{
-  padding:16px;
-  border-bottom:1px solid var(--border);
-  color:var(--text);
-}
-
-tr:hover{
-  background:#f8fafc;
+tbody tr {
+  border-bottom: 1px solid var(--border);
   transition: background 0.2s;
 }
 
-.project-name{
-  font-weight:600;
-  color:var(--blue);
-  cursor:pointer;
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+tbody td {
+  padding: 14px 16px;
+  color: var(--text);
+}
+
+.project-name {
+  font-weight: 700;
+  color: var(--blue);
+  cursor: pointer;
   transition: color 0.2s;
 }
 
-.project-name:hover{
-  text-decoration:underline;
+.project-name:hover {
   color: var(--purple);
+  text-decoration: underline;
 }
 
 .analista-bold {
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.04);
+}
+
+.data-prevista-customizada {
+  padding: 4px 10px !important;
+  border-radius: 6px;
+  font-weight: 700;
   display: inline-block;
 }
 
-.analista-abraao { color: var(--color-abraao); background: rgba(255, 184, 0, 0.1) !important; }
-.analista-dalto { color: var(--color-dalto); background: rgba(249, 115, 22, 0.1) !important; }
-.analista-jonathas { color: var(--color-jonathas); background: rgba(56, 189, 248, 0.1) !important; }
-.analista-lucas { color: var(--color-lucas); background: rgba(3, 105, 161, 0.1) !important; }
-.analista-efraim { color: var(--color-efraim); background: rgba(13, 148, 136, 0.1) !important; }
-.analista-cristhian { color: var(--color-cristhian); background: rgba(71, 85, 105, 0.1) !important; }
-.analista-ernane { color: var(--color-ernane); background: rgba(30, 58, 138, 0.1) !important; }
-.analista-william { color: var(--color-william); background: rgba(22, 163, 74, 0.1) !important; }
+.abraao { color: var(--color-abraao); }
+.dalto { color: var(--color-dalto); }
+.jonathas { color: var(--color-jonathas); }
+.lucas { color: var(--color-lucas); }
+.efraim { color: var(--color-efraim); }
+.cristhian { color: var(--color-cristhian); }
+.ernane { color: var(--color-ernane); }
+.william { color: var(--color-william); }
 
-.badge{
-  padding:6px 14px;
-  border-radius:20px;
-  font-weight:600;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:0.3px;
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
-.emandamento {
-  background: var(--status-andamento-bg);
-  color: var(--status-andamento-text);
+.emandamento { background: var(--status-andamento-bg); color: var(--status-andamento-text); }
+.paralisado { background: var(--status-paralisado-bg); color: var(--status-paralisado-text); }
+.aguardandocliente { background: var(--status-cliente-bg); color: var(--status-cliente-text); }
+.planejado { background: var(--status-planejado-bg); color: var(--status-planejado-text); }
+.concluido { background: var(--status-concluido-bg); color: var(--status-concluido-text); }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.paralisado {
-  background: var(--status-paralisado-bg);
-  color: var(--status-paralisado-text);
-}
-
-.cliente {
-  background: var(--status-cliente-bg);
-  color: var(--status-cliente-text);
-}
-
-.planejado {
-  background: var(--status-planejado-bg);
-  color: var(--status-planejado-text);
-}
-
-.concluido {
-  background: var(--status-concluido-bg);
-  color: var(--status-concluido-text);
-}
-
-.progress{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.bar{
-  flex:1;
-  height:10px;
-  background:#e5e7eb;
-  border-radius:20px;
-  overflow:hidden;
+.bar {
+  flex: 1;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
   position: relative;
 }
 
-.fill{
-  height:100%;
-  background:linear-gradient(90deg, var(--blue), var(--purple));
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  border-radius: 20px;
   transition: width 0.6s ease;
-  border-radius:20px;
-  box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
 }
 
 .no-results {
@@ -562,24 +556,23 @@ tr:hover{
 
 .no-results h3 {
   font-size: 18px;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
-.modal{
-  display:none;
-  position:fixed;
-  z-index:9999;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.6);
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  align-items:center;
-  justify-content:center;
-  animation: fadeIn 0.3s ease;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s;
 }
 
 @keyframes fadeIn {
@@ -587,52 +580,44 @@ tr:hover{
   to { opacity: 1; }
 }
 
-.modal-content{
-  background:var(--panel);
-  border-radius:20px;
-  padding:32px;
-  width:90%;
-  max-width:600px;
-  max-height:90vh;
-  overflow-y:auto;
-  box-shadow:0 25px 50px rgba(0,0,0,0.2);
-  animation: slideUp 0.3s ease;
+.modal-content {
+  background: var(--panel);
+  padding: 32px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s;
   position: relative;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-.modal-content::-webkit-scrollbar {
-  width: 8px;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
 }
 
-.modal-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--blue);
 }
 
-.modal-content::-webkit-scrollbar-thumb {
-  background: var(--blue);
-  border-radius: 10px;
-}
-
-.close{
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  font-size: 32px;
-  font-weight: 300;
-  cursor: pointer;
+.close {
   color: var(--muted);
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
   transition: all 0.2s;
   width: 36px;
   height: 36px;
@@ -642,302 +627,254 @@ tr:hover{
   border-radius: 50%;
 }
 
-.close:hover{
+.close:hover {
   color: var(--red);
-  background: rgba(239, 68, 68, 0.1);
+  background: #fee2e2;
   transform: rotate(90deg);
 }
 
-.modal-content h2{
-  font-size:24px;
-  margin-bottom:8px;
-  color:var(--blue);
-  font-weight:800;
-  padding-right: 40px;
+.modal-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: start;
+}
+
+.modal-row strong {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.modal-row span {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 .modal-section {
-  margin: 24px 0;
-  padding: 20px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border-left: 4px solid var(--blue);
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 }
 
 .modal-section h3 {
   font-size: 14px;
   font-weight: 700;
-  color: var(--text);
-  text-transform: uppercase;
+  color: var(--blue);
   margin-bottom: 12px;
-  letter-spacing: 0.5px;
-}
-
-.modal-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.modal-info-item {
-  background: white;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-}
-
-.modal-info-item strong {
-  display: block;
-  font-size: 11px;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 6px;
-  font-weight: 700;
   letter-spacing: 0.5px;
-}
-
-.modal-info-item span {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-/* NOVO: Estilo para data prevista com cor customizada */
-.data-prevista-customizada {
-  padding: 6px 12px;
-  border-radius: 8px;
-  display: inline-block;
-  font-weight: 700;
 }
 
 @media (max-width: 768px) {
-  .kpis {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .charts {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .chart-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .chart-select {
-    width: 100%;
-  }
+  body { padding: 16px; }
+  .charts { grid-template-columns: 1fr; }
+  .chart-box { height: 320px; }
+  .modal-content { padding: 24px; width: 95%; }
+  .modal-row { grid-template-columns: 1fr; gap: 6px; }
+  header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
 <body>
-
 <div class="container">
-<header>
-  <div>
-    <h1>PMO Dashboard <span>| OkVendas</span></h1>
-  </div>
-  <div class="header-actions">
-    <button class="btn-refresh" onclick="fetchData()">
-      <i class="fa-solid fa-rotate" id="refreshIcon"></i>
-      Atualizar
-    </button>
-    <button class="btn-clear-filters" onclick="clearAllFilters()">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      Limpar Filtros
-    </button>
-  </div>
-</header>
 
-<div class="active-filters" id="activeFilters">
-  <span class="filter-label">Filtros Ativos:</span>
-  <div id="filterTags"></div>
-</div>
-
-<div class="kpis">
-  <div class="kpi" onclick="filterByStatus(null)">
-    <i class="fa-solid fa-diagram-project"></i>
-    <h3>Total de Projetos</h3>
-    <p id="kTotal">0</p>
-    <div class="kpi-hint">Clique para ver todos</div>
-  </div>
-  <div class="kpi" onclick="filterByStatus('andamento')">
-    <i class="fa-solid fa-spinner"></i>
-    <h3>Em Andamento</h3>
-    <p id="kAtivos" style="color:var(--green)">0</p>
-    <div class="kpi-hint">Clique para filtrar</div>
-  </div>
-  <div class="kpi" onclick="filterByStatus('paralisado')">
-    <i class="fa-solid fa-circle-pause"></i>
-    <h3>Paralisados</h3>
-    <p id="kPausados" style="color:var(--red)">0</p>
-    <div class="kpi-hint">Clique para filtrar</div>
-  </div>
-  <div class="kpi" onclick="filterByStatus('cliente')">
-    <i class="fa-solid fa-user-clock"></i>
-    <h3>Aguardando Cliente</h3>
-    <p id="kCliente" style="color:var(--purple)">0</p>
-    <div class="kpi-hint">Clique para filtrar</div>
-  </div>
-</div>
-
-<div class="charts">
-  <div class="chart-box">
-    <div class="chart-header">
-      <div class="chart-title">
-        <i class="fa-solid fa-chart-pie"></i>
-        Status dos Projetos
-      </div>
-    </div>
-    <div class="chart-canvas">
-      <canvas id="status"></canvas>
+  <!-- Banner de Erro de Conexão -->
+  <div class="connection-error" id="connectionError">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <div class="connection-error-content">
+      <h3>⚠️ Erro de Conexão com Google Sheets</h3>
+      <p>
+        Não foi possível carregar os dados. Verifique sua conexão com a internet e tente novamente.
+      </p>
     </div>
   </div>
 
-  <div class="chart-box">
-    <div class="chart-header">
-      <div class="chart-title">
-        <i class="fa-solid fa-users"></i>
-        Carga por Analista
-      </div>
-      <select class="chart-select" id="analistaSelect" onchange="updateAnalistaChart()">
-        <option value="all">Todos Analistas</option>
-      </select>
+  <header>
+    <div>
+      <h1>PMO Dashboard <span>| OkVendas</span></h1>
     </div>
-    <div class="chart-canvas">
-      <canvas id="analistas"></canvas>
+    <div class="header-actions">
+      <button class="btn-refresh" onclick="fetchData()">
+        <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+        Atualizar
+      </button>
+      <button class="btn-clear-filters" id="btnClearFilters" onclick="clearAllFilters()">
+        <i class="fa-solid fa-filter-circle-xmark"></i>
+        Limpar Filtros
+      </button>
+    </div>
+  </header>
+
+  <div class="active-filters" id="activeFilters">
+    <span class="filter-label">Filtros Ativos:</span>
+    <div id="filterTags"></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi" onclick="filterByStatus(null)">
+      <i class="fa-solid fa-diagram-project"></i>
+      <h3>Total Projetos</h3>
+      <p id="kTotal">0</p>
+      <div class="kpi-hint">Clique para ver todos</div>
+    </div>
+    <div class="kpi" onclick="filterByStatus('andamento')">
+      <i class="fa-solid fa-play"></i>
+      <h3>Em Andamento</h3>
+      <p id="kAtivos">0</p>
+      <div class="kpi-hint">Clique para filtrar</div>
+    </div>
+    <div class="kpi" onclick="filterByStatus('paralisado')">
+      <i class="fa-solid fa-pause"></i>
+      <h3>Paralisados</h3>
+      <p id="kPausados">0</p>
+      <div class="kpi-hint">Clique para filtrar</div>
+    </div>
+    <div class="kpi" onclick="filterByStatus('cliente')">
+      <i class="fa-solid fa-clock"></i>
+      <h3>Aguardando Cliente</h3>
+      <p id="kCliente">0</p>
+      <div class="kpi-hint">Clique para filtrar</div>
     </div>
   </div>
 
-  <div class="chart-box">
-    <div class="chart-header">
-      <div class="chart-title">
-        <i class="fa-solid fa-chart-line"></i>
-        Curva S - Progresso
-        <span class="info-icon">
-          <i class="fa-solid fa-circle-info"></i>
-          <span class="tooltip">
-            <strong>Curva S:</strong> Compara o progresso planejado (100%) com o progresso real do projeto.<br>
-            <strong>Cálculo Ponderado:</strong><br>
-            • Início: 25%<br>
-            • Execução: 50%<br>
-            • Liberação: 75%<br>
-            • Validação: 90%<br>
-            • Concluídas: 100%
-          </span>
+  <div class="charts">
+    <div class="chart-box">
+      <div class="chart-header">
+        <span class="chart-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Distribuição por Status
         </span>
       </div>
-      <select class="chart-select" id="projectSelect" onchange="updateCurvaS()">
-        <option value="all">Visão Geral</option>
-      </select>
+      <div class="chart-canvas">
+        <canvas id="status"></canvas>
+      </div>
     </div>
-    <div class="chart-info" id="curvaInfo"></div>
-    <div class="chart-canvas">
-      <canvas id="curve"></canvas>
+
+    <div class="chart-box">
+      <div class="chart-header">
+        <span class="chart-title">
+          <i class="fa-solid fa-users"></i>
+          Carga por Analista
+        </span>
+        <div class="chart-filter">
+          <label for="analistaSelect">Filtro:</label>
+          <select id="analistaSelect" onchange="updateAnalistaChart()">
+            <option value="all">Todos</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-canvas">
+        <canvas id="analistas"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-header">
+        <span class="chart-title">
+          <i class="fa-solid fa-chart-line"></i>
+          Curva S de Progresso
+          <span class="info-icon">
+            <i class="fa-solid fa-circle-info"></i>
+            <span class="tooltip">Compara o progresso planejado (100%) com o realizado. Verde: no prazo | Amarelo: atenção | Vermelho: atrasado</span>
+          </span>
+        </span>
+        <div class="chart-filter">
+          <label for="projectSelect">Projeto:</label>
+          <select id="projectSelect" onchange="updateCurvaS()">
+            <option value="all">Visão Geral</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-canvas">
+        <canvas id="curve"></canvas>
+      </div>
+      <div class="curva-info" id="curvaInfo"></div>
+    </div>
+  </div>
+
+  <div class="project-table">
+    <h2><i class="fa-solid fa-table"></i> Detalhamento de Projetos</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Projeto</th>
+            <th>Data Prevista</th>
+            <th>Analista</th>
+            <th>Status</th>
+            <th>Evolução</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Carregando dados...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
-<div class="table-panel">
-  <div class="table-header">
-    <div class="table-title">
-      <i class="fa-solid fa-table"></i>
-      Lista de Projetos
-    </div>
-    <div class="search-container">
-      <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="searchBox" placeholder="Buscar projeto..." onkeyup="searchTable()">
-    </div>
-  </div>
-  
-  <table>
-    <thead>
-      <tr>
-        <th>Projeto</th>
-        <th>Data Prevista</th>
-        <th>Analista</th>
-        <th>Status</th>
-        <th>Evolução</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
-
-</div>
-
-<!-- Modal -->
 <div id="modal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h2 id="mTitle"></h2>
-    
+    <div class="modal-header">
+      <h2 id="mTitle"></h2>
+      <span class="close" onclick="closeModal()">&times;</span>
+    </div>
+    <div class="modal-row">
+      <strong>Analista:</strong>
+      <span id="mAnalista"></span>
+    </div>
+    <div class="modal-row">
+      <strong>Status:</strong>
+      <span id="mStatus"></span>
+    </div>
+    <div class="modal-row">
+      <strong>Data Prevista:</strong>
+      <span id="mData"></span>
+    </div>
     <div class="modal-section">
-      <h3><i class="fa-solid fa-info-circle"></i> Informações Gerais</h3>
-      <div class="modal-grid">
-        <div class="modal-info-item">
-          <strong>Analista</strong>
-          <span id="mAnalista"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>Status</strong>
-          <span id="mStatus"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>Data Prevista</strong>
-          <span id="mData"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>Total de Tarefas</strong>
-          <span id="mTotal"></span>
-        </div>
+      <h3>Atividades</h3>
+      <div class="modal-row">
+        <strong>Concluídas:</strong>
+        <span id="mConcluidas"></span>
+      </div>
+      <div class="modal-row">
+        <strong>Validação:</strong>
+        <span id="mValidacao"></span>
+      </div>
+      <div class="modal-row">
+        <strong>Liberação:</strong>
+        <span id="mLiberacao"></span>
+      </div>
+      <div class="modal-row">
+        <strong>Execução:</strong>
+        <span id="mExecucao"></span>
+      </div>
+      <div class="modal-row">
+        <strong>Início:</strong>
+        <span id="mInicio"></span>
+      </div>
+      <div class="modal-row">
+        <strong>Total:</strong>
+        <span id="mTotal"></span>
       </div>
     </div>
-
-    <!-- MODIFICADO: Observação aparece antes dos status de tarefas -->
     <div class="modal-section">
-      <h3><i class="fa-solid fa-note-sticky"></i> Observações</h3>
-      <div class="modal-info-item" style="margin-top: 12px;">
-        <span id="mObs" style="font-size: 14px; font-weight: 400; line-height: 1.6;"></span>
+      <h3>Descrição</h3>
+      <div class="modal-row">
+        <span id="mDescricao" style="grid-column: 1 / -1;"></span>
       </div>
     </div>
-
     <div class="modal-section">
-      <h3><i class="fa-solid fa-tasks"></i> Status das Tarefas</h3>
-      <div class="modal-grid">
-        <div class="modal-info-item">
-          <strong>✅ Concluídas</strong>
-          <span id="mConcluidas" style="color: var(--green);"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>🔍 Validação</strong>
-          <span id="mValidacao" style="color: var(--blue);"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>🚀 Liberação</strong>
-          <span id="mLiberacao" style="color: var(--purple);"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>⚙️ Execução</strong>
-          <span id="mExecucao" style="color: var(--yellow);"></span>
-        </div>
-        <div class="modal-info-item">
-          <strong>📋 Início</strong>
-          <span id="mInicio" style="color: var(--muted);"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <h3><i class="fa-solid fa-file-lines"></i> Descrição do Projeto</h3>
-      <div class="modal-info-item" style="margin-top: 12px;">
-        <span id="mDescricao" style="font-size: 14px; font-weight: 400; line-height: 1.6;"></span>
+      <h3>Observações</h3>
+      <div class="modal-row">
+        <span id="mObs" style="grid-column: 1 / -1;"></span>
       </div>
     </div>
   </div>
@@ -945,208 +882,189 @@ tr:hover{
 
 <script>
 // ========== CONFIGURAÇÃO ==========
-const DEBUG = true;
-const SHEET_ID = "15UZDqDzhW8PiTVuzKQD8KUGvczWN4b3EK0WHC-qf1QI";
-const RANGE = "base!A:Q";
+// URL da planilha publicada (formato CSV via Google Visualization API)
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=378165818&single=true&output=csv';
 
+const DEBUG_MODE = true; // Ative para ver logs no console
+
+// ========== ESTADO GLOBAL ==========
+let projectData = [];
+let charts = { status: null, analistas: null, curve: null };
+let currentFilters = { analista: null, status: null };
+
+// ========== FUNÇÕES DE DEBUG ==========
 function debugLog(message, type = 'info') {
-  if (!DEBUG) return;
+  if (!DEBUG_MODE) return;
   const styles = {
     info: 'color: #0ea5e9; font-weight: bold',
     success: 'color: #10b981; font-weight: bold',
     warning: 'color: #f59e0b; font-weight: bold',
     error: 'color: #ef4444; font-weight: bold'
   };
-  console.log(`%c${message}`, styles[type] || styles.info);
+  console.log(`%c[PMO] ${message}`, styles[type] || styles.info);
 }
 
-// ========== ESTADO ==========
-let projectData = [];
-let charts = { status: null, analistas: null, curve: null };
-let currentFilters = { analista: null, status: null };
-
-// ========== FETCH ==========
+// ========== FETCH DE DADOS ==========
 async function fetchData() {
+  const refreshIcon = document.getElementById('refreshIcon');
+  const errorBanner = document.getElementById('connectionError');
+  
+  refreshIcon?.classList.add('spinning');
+  errorBanner.classList.remove('show');
+  
+  debugLog('🔄 Iniciando fetch dos dados...', 'info');
+  
   try {
-    debugLog('🔄 Iniciando busca de dados...', 'info');
-    const icon = document.getElementById('refreshIcon');
-    icon.classList.add('spinning');
-
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&range=${RANGE}`;
-    const res = await fetch(url);
-    const txt = await res.text();
-    const json = JSON.parse(txt.slice(47, -2));
-
-    const rows = json.table.rows;
-    projectData = rows.slice(1).map(r => {
-      const c = r.c;
+    const response = await fetch(SHEET_URL);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const csvText = await response.text();
+    debugLog('📥 Resposta CSV recebida, processando...', 'info');
+    
+    // Parse CSV
+    const lines = csvText.split('\n').filter(line => line.trim());
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    
+    projectData = lines.slice(1).map(line => {
+      // Parse CSV respeitando aspas
+      const values = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let char of line) {
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      values.push(current.trim().replace(/^"|"$/g, ''));
+      
       return {
-        Projeto: c[0]?.v || "",
-        DataPrevista: c[1]?.v || "",
-        CorDataPrevista: c[2]?.v || "", // NOVO: Campo para cor customizada
-        Analista: c[3]?.v || "",
-        Status: c[4]?.v || "",
-        Concluidas: parseInt(c[5]?.v) || 0,
-        Validacao: parseInt(c[6]?.v) || 0,
-        Liberacao: parseInt(c[7]?.v) || 0,
-        Execucao: parseInt(c[8]?.v) || 0,
-        Inicio: parseInt(c[9]?.v) || 0,
-        Total: parseInt(c[10]?.v) || 0,
-        Descricao: c[11]?.v || "",
-        Obs: c[12]?.v || ""
+        Projeto: values[0] || '',
+        DataPrevista: values[1] || '',
+        Analista: values[2] || '',
+        Status: values[3] || '',
+        Concluidas: parseInt(values[4]) || 0,
+        Validacao: parseInt(values[5]) || 0,
+        Liberacao: parseInt(values[6]) || 0,
+        Execucao: parseInt(values[7]) || 0,
+        Inicio: parseInt(values[8]) || 0,
+        Total: parseInt(values[9]) || 0,
+        Descricao: values[10] || '',
+        Obs: values[11] || '',
+        CorDataPrevista: values[12] || ''
       };
-    });
-
-    debugLog(`✅ ${projectData.length} projetos carregados`, 'success');
+    }).filter(p => p.Projeto);
+    
+    debugLog(`✅ Dados processados: ${projectData.length} projetos encontrados`, 'success');
+    
     populateSelects();
     renderAll();
-    icon.classList.remove('spinning');
+    errorBanner.classList.remove('show');
+    
   } catch (error) {
-    debugLog(`❌ Erro ao buscar dados: ${error.message}`, 'error');
-    const icon = document.getElementById('refreshIcon');
-    icon.classList.remove('spinning');
+    debugLog(`❌ Erro ao carregar dados: ${error.message}`, 'error');
+    errorBanner.classList.add('show');
+    console.error('Detalhes do erro:', error);
+  } finally {
+    refreshIcon?.classList.remove('spinning');
   }
 }
 
-// ========== UTILITÁRIOS ==========
-function cleanKey(s) {
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+// ========== SELETORES ==========
+function populateSelects() {
+  const analistaSelect = document.getElementById('analistaSelect');
+  const projectSelect = document.getElementById('projectSelect');
+  
+  const analistas = [...new Set(projectData.map(p => p.Analista))].sort();
+  analistaSelect.innerHTML = '<option value="all">Todos</option>' + 
+    analistas.map(a => `<option value="${a}">${a}</option>`).join('');
+  
+  const projetos = [...new Set(projectData.map(p => p.Projeto))].sort();
+  projectSelect.innerHTML = '<option value="all">Visão Geral</option>' + 
+    projetos.map(p => `<option value="${p}">${p}</option>`).join('');
+  
+  debugLog(`📋 Seletores populados: ${analistas.length} analistas, ${projetos.length} projetos`, 'info');
 }
 
-function getStatusColor(status) {
-  const s = cleanKey(status);
-  if (s.includes('andamento')) return '#10b981';
-  if (s.includes('paralisado')) return '#ef4444';
-  if (s.includes('cliente')) return '#8b5cf6';
-  if (s.includes('planejado')) return '#94a3b8';
-  if (s.includes('concluido')) return '#0ea5e9';
-  return '#cbd5e1';
-}
-
-function getAnalistaColor(nome) {
-  const n = cleanKey(nome);
-  if (n.includes('abraao')) return '#FFB800';
-  if (n.includes('dalto')) return '#f97316';
-  if (n.includes('jonathas')) return '#38bdf8';
-  if (n.includes('lucas')) return '#0369a1';
-  if (n.includes('efraim')) return '#0d9488';
-  if (n.includes('cristhian')) return '#475569';
-  if (n.includes('ernane')) return '#1e3a8a';
-  if (n.includes('william')) return '#16a34a';
-  return '#64748b';
+// ========== HELPERS ==========
+function cleanKey(str) {
+  return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
 }
 
 function getAnalistaClass(nome) {
-  const n = cleanKey(nome);
-  if (n.includes('abraao')) return 'analista-abraao';
-  if (n.includes('dalto')) return 'analista-dalto';
-  if (n.includes('jonathas')) return 'analista-jonathas';
-  if (n.includes('lucas')) return 'analista-lucas';
-  if (n.includes('efraim')) return 'analista-efraim';
-  if (n.includes('cristhian')) return 'analista-cristhian';
-  if (n.includes('ernane')) return 'analista-ernane';
-  if (n.includes('william')) return 'analista-william';
-  return '';
+  const map = {
+    'abraão': 'abraao', 'dalto': 'dalto', 'jonathas': 'jonathas',
+    'lucas': 'lucas', 'efraim': 'efraim', 'cristhian': 'cristhian',
+    'ernane': 'ernane', 'william': 'william'
+  };
+  return map[cleanKey(nome)] || '';
+}
+
+function getAnalistaColor(nome) {
+  const colors = {
+    'abraão': '#FFB800', 'dalto': '#f97316', 'jonathas': '#38bdf8',
+    'lucas': '#0369a1', 'efraim': '#0d9488', 'cristhian': '#475569',
+    'ernane': '#1e3a8a', 'william': '#16a34a'
+  };
+  return colors[cleanKey(nome)] || '#64748b';
+}
+
+function getStatusColor(status) {
+  const map = {
+    'andamento': '#10b981', 'paralisado': '#ef4444',
+    'cliente': '#8b5cf6', 'planejado': '#94a3b8', 'concluido': '#0ea5e9'
+  };
+  const key = cleanKey(status);
+  for (let k in map) {
+    if (key.includes(k)) return map[k];
+  }
+  return '#64748b';
+}
+
+function calcularEvolucaoPonderada(projeto) {
+  const { Concluidas, Validacao, Liberacao, Execucao, Inicio, Total } = projeto;
+  
+  if (Total === 0) return 0;
+  
+  const pesoInicio = 0.05;
+  const pesoExecucao = 0.20;
+  const pesoLiberacao = 0.30;
+  const pesoValidacao = 0.35;
+  const pesoConcluidas = 1.00;
+  
+  const pontuacaoTotal = 
+    (Inicio * pesoInicio) +
+    (Execucao * pesoExecucao) +
+    (Liberacao * pesoLiberacao) +
+    (Validacao * pesoValidacao) +
+    (Concluidas * pesoConcluidas);
+  
+  const pontuacaoMaxima = Total;
+  const percentual = (pontuacaoTotal / pontuacaoMaxima) * 100;
+  
+  return Math.min(Math.round(percentual), 100);
 }
 
 function getSemaforoColor(diferenca) {
-  if (diferenca <= 20) return 'verde';
-  if (diferenca <= 40) return 'amarelo';
+  if (diferenca <= 15) return 'verde';
+  if (diferenca <= 35) return 'amarelo';
   return 'vermelho';
 }
 
-// MODIFICADO: Novo cálculo ponderado de evolução
-function calcularEvolucaoPonderada(projeto) {
-  const total = projeto.Total;
-  if (total === 0) return 0;
-  
-  const pesoInicio = 0.25;
-  const pesoExecucao = 0.50;
-  const pesoLiberacao = 0.75;
-  const pesoValidacao = 0.90;
-  const pesoConcluidas = 1.00;
-  
-  const pontosPonderados = 
-    (projeto.Inicio * pesoInicio) +
-    (projeto.Execucao * pesoExecucao) +
-    (projeto.Liberacao * pesoLiberacao) +
-    (projeto.Validacao * pesoValidacao) +
-    (projeto.Concluidas * pesoConcluidas);
-  
-  const percentual = (pontosPonderados / total) * 100;
-  return Math.round(percentual);
-}
-
-// ========== POPULATE SELECTS ==========
-function populateSelects() {
-  const analistas = [...new Set(projectData.map(p => p.Analista))].sort();
-  const projetos = projectData.map(p => p.Projeto).sort();
-
-  const analistaSelect = document.getElementById('analistaSelect');
-  analistaSelect.innerHTML = '<option value="all">Todos Analistas</option>';
-  
-  // MODIFICADO: Ordenar analistas por carga (maior para menor)
-  const analistasComCarga = analistas.map(a => ({
-    nome: a,
-    carga: projectData.filter(p => p.Analista === a).length
-  })).sort((a, b) => b.carga - a.carga);
-  
-  analistasComCarga.forEach(({nome, carga}) => {
-    const opt = document.createElement('option');
-    opt.value = nome;
-    opt.textContent = `${nome} (${carga})`;
-    analistaSelect.appendChild(opt);
-  });
-
-  const projectSelect = document.getElementById('projectSelect');
-  projectSelect.innerHTML = '<option value="all">Visão Geral</option>';
-  projetos.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p;
-    opt.textContent = p;
-    projectSelect.appendChild(opt);
-  });
-
-  debugLog(`📋 Selects populados: ${analistas.length} analistas, ${projetos.length} projetos`, 'success');
-}
-
-// ========== BUSCA ==========
-function searchTable() {
-  const input = document.getElementById("searchBox").value.toLowerCase();
-  const rows = document.querySelectorAll("#tbody tr");
-  
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(input) ? "" : "none";
-  });
-}
-
-// ========== FILTROS ==========
-function filterByStatus(status) {
-  currentFilters.status = status;
-  renderAll();
-  updateActiveFilters();
-}
-
-function filterByAnalista(analista) {
-  currentFilters.analista = analista;
-  renderAll();
-  updateActiveFilters();
-}
-
-function clearAllFilters() {
-  currentFilters = { analista: null, status: null };
-  document.getElementById('analistaSelect').value = 'all';
-  renderAll();
-  updateActiveFilters();
-  debugLog('🧹 Filtros limpos', 'info');
-}
-
-function destroyChart(chartKey) {
-  if (charts[chartKey]) {
-    charts[chartKey].destroy();
-    charts[chartKey] = null;
-    debugLog(`🗑️ Gráfico ${chartKey} destruído`, 'info');
+// ========== DESTROY CHARTS ==========
+function destroyChart(chartName) {
+  if (charts[chartName]) {
+    charts[chartName].destroy();
+    charts[chartName] = null;
+    debugLog(`🗑️ Gráfico ${chartName} destruído`, 'info');
   }
 }
 
@@ -1155,33 +1073,49 @@ function destroyAllCharts() {
   debugLog('🗑️ Todos os gráficos destruídos', 'info');
 }
 
-function updateActiveFilters() {
-  const activeFiltersEl = document.getElementById('activeFilters');
-  const filterTagsEl = document.getElementById('filterTags');
-  const btnClear = document.querySelector('.btn-clear-filters');
+// ========== FILTROS ==========
+function filterByStatus(status) {
+  currentFilters.status = status;
+  updateFilterDisplay();
+  renderAll();
+  updateActiveKPI();
+  debugLog(`🔍 Filtro de status aplicado: ${status || 'todos'}`, 'info');
+}
+
+function clearAllFilters() {
+  currentFilters = { analista: null, status: null };
+  document.getElementById('analistaSelect').value = 'all';
+  updateFilterDisplay();
+  renderAll();
+  updateActiveKPI();
+  debugLog('🧹 Filtros limpos', 'info');
+}
+
+function updateFilterDisplay() {
+  const activeFiltersDiv = document.getElementById('activeFilters');
+  const filterTagsDiv = document.getElementById('filterTags');
+  const btnClear = document.getElementById('btnClearFilters');
   
   const hasFilters = currentFilters.analista || currentFilters.status;
   
   if (hasFilters) {
     let tags = '';
-    if (currentFilters.analista) {
-      tags += `<span class="filter-tag"><i class="fa-solid fa-user"></i> ${currentFilters.analista}</span>`;
-    }
-    if (currentFilters.status) {
-      const statusLabel = currentFilters.status.charAt(0).toUpperCase() + currentFilters.status.slice(1);
-      tags += `<span class="filter-tag"><i class="fa-solid fa-filter"></i> ${statusLabel}</span>`;
-    }
+    if (currentFilters.analista) tags += `<span class="filter-tag"><i class="fa-solid fa-user"></i> ${currentFilters.analista}</span>`;
+    if (currentFilters.status) tags += `<span class="filter-tag"><i class="fa-solid fa-circle-dot"></i> ${currentFilters.status}</span>`;
     
-    filterTagsEl.innerHTML = tags;
-    activeFiltersEl.style.display = 'flex';
+    filterTagsDiv.innerHTML = tags;
+    activeFiltersDiv.style.display = 'flex';
     btnClear.style.display = 'flex';
   } else {
-    activeFiltersEl.style.display = 'none';
+    activeFiltersDiv.style.display = 'none';
     btnClear.style.display = 'none';
   }
-  
-  document.querySelectorAll('.kpi').forEach(kpi => kpi.classList.remove('active'));
+}
+
+function updateActiveKPI() {
   const kpis = document.querySelectorAll('.kpi');
+  kpis.forEach(k => k.classList.remove('active'));
+  
   if (currentFilters.status === 'andamento') kpis[1]?.classList.add('active');
   else if (currentFilters.status === 'paralisado') kpis[2]?.classList.add('active');
   else if (currentFilters.status === 'cliente') kpis[3]?.classList.add('active');
@@ -1211,14 +1145,12 @@ function renderTable(p) {
   }
   
   tb.innerHTML = p.map(x => {
-    // MODIFICADO: Usando cálculo ponderado em vez de concluídas/total
     const perc = calcularEvolucaoPonderada(x);
     const statusClass = cleanKey(x.Status).replace(/\./g, "").replace(/\s/g, '-');
     const analistaClass = getAnalistaClass(x.Analista);
     
     const projetoEscaped = x.Projeto.replace(/'/g, "\\'").replace(/`/g, "\\`");
     
-    // MODIFICADO: Aplicar cor customizada na data prevista
     const dataStyle = x.CorDataPrevista 
       ? `style="background-color: ${x.CorDataPrevista}; color: white;" class="data-prevista-customizada"`
       : '';
@@ -1312,7 +1244,6 @@ function updateAnalistaChart() {
     analistasCount[x.Analista] = (analistasCount[x.Analista] || 0) + 1;
   });
   
-  // MODIFICADO: Ordenar analistas por carga (maior para menor)
   const analistaLabels = Object.keys(analistasCount).sort((a, b) => 
     analistasCount[b] - analistasCount[a]
   );
@@ -1356,7 +1287,6 @@ function updateCurvaS() {
   
   if (selectedProject === 'all') {
     const filtered = getFilteredData();
-    // MODIFICADO: Usar cálculo ponderado para média
     const media = filtered.length > 0 
       ? Math.round(filtered.reduce((acc, curr) => acc + calcularEvolucaoPonderada(curr), 0) / filtered.length)
       : 0;
@@ -1373,7 +1303,6 @@ function updateCurvaS() {
   } else {
     const projeto = projectData.find(p => p.Projeto === selectedProject);
     if (projeto) {
-      // MODIFICADO: Usar cálculo ponderado
       const perc = calcularEvolucaoPonderada(projeto);
       diferenca = 100 - perc;
       const semaforo = getSemaforoColor(diferenca);
@@ -1431,7 +1360,6 @@ function openProjectModal(projectName) {
   document.getElementById("mAnalista").textContent = projeto.Analista;
   document.getElementById("mStatus").textContent = projeto.Status;
   
-  // MODIFICADO: Aplicar cor customizada no modal também
   const dataEl = document.getElementById("mData");
   dataEl.textContent = projeto.DataPrevista;
   if (projeto.CorDataPrevista) {
@@ -1441,6 +1369,13 @@ function openProjectModal(projectName) {
     dataEl.style.borderRadius = '8px';
     dataEl.style.display = 'inline-block';
     dataEl.style.fontWeight = '700';
+  } else {
+    dataEl.style.backgroundColor = '';
+    dataEl.style.color = '';
+    dataEl.style.padding = '';
+    dataEl.style.borderRadius = '';
+    dataEl.style.display = '';
+    dataEl.style.fontWeight = '';
   }
   
   document.getElementById("mConcluidas").textContent = projeto.Concluidas;
@@ -1465,7 +1400,7 @@ window.onclick = e => {
 
 // ========== INIT ==========
 window.onload = fetchData;
-setInterval(fetchData, 300000);
+setInterval(fetchData, 300000); // Atualiza a cada 5 minutos
 window.addEventListener('beforeunload', () => {
   destroyAllCharts();
   clearAllFilters();
