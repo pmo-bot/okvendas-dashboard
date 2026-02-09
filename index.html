@@ -870,7 +870,21 @@ tr:hover{background:#f8fafc}
 </div>
 
 <div class="table-box">
-<h2 class="table-title">Detalhamento de Projetos</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 class="table-title" style="margin-bottom: 0;">Detalhamento de Projetos</h2>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <i class="fa-solid fa-search" style="color: var(--muted);"></i>
+    <input 
+      type="text" 
+      id="projectFilter" 
+      placeholder="Buscar projeto..." 
+      style="padding: 8px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 500; width: 250px; transition: all 0.2s;"
+      onkeyup="filterTableByProject()"
+      onfocus="this.style.borderColor='var(--blue)'; this.style.boxShadow='0 0 0 3px rgba(14, 165, 233, 0.1)'"
+      onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'"
+    />
+  </div>
+</div>
 <table>
 <thead>
 <tr>
@@ -904,6 +918,11 @@ tr:hover{background:#f8fafc}
         <span class="info-label">Data Prevista:</span>
         <span class="info-value" id="mData"></span>
       </div>
+    </div>
+    
+    <div class="obs-section">
+      <h3><i class="fa-solid fa-note-sticky"></i> Observações</h3>
+      <p id="mObs"></p>
     </div>
     
     <div class="tasks-breakdown">
@@ -978,11 +997,6 @@ tr:hover{background:#f8fafc}
         </div>
         <div class="task-count" id="mTotal" style="font-size: 22px;">0</div>
       </div>
-    </div>
-    
-    <div class="obs-section">
-      <h3><i class="fa-solid fa-note-sticky"></i> Observações</h3>
-      <p id="mObs"></p>
     </div>
     
     <button class="btn-modal" onclick="closeModal()">Fechar Detalhes</button>
@@ -1215,6 +1229,7 @@ async function fetchData() {
       analista: findCol(['analista', 'responsavel']),
       obs: findCol(['obs', 'observacao', 'observacoes']),
       dataPrevista: findCol(['data prevista', 'previsao', 'prazo']),
+      corDataPrevista: findCol(['cor data prevista', 'cor previsao', 'cor prazo']),
       concluidas: findCol(['concluidas']),
       validacao: findCol(['em validacao', 'validacao']),
       liberacao: findCol(['ag liberacao', 'ag. liberacao', 'liberacao']),
@@ -1260,6 +1275,7 @@ async function fetchData() {
         Status: getValue(colIdx.status, "Planejado"),
         Analista: getValue(colIdx.analista, "N/A"),
         DataPrevista: getValue(colIdx.dataPrevista, "-"),
+        CorDataPrevista: getValue(colIdx.corDataPrevista, ""),
         Concluidas: concluidas,
         Validacao: validacao,
         Liberacao: liberacao,
@@ -1354,6 +1370,7 @@ function clearAllFilters() {
   currentFilters = { analista: null, status: null };
   document.getElementById('projectSelect').value = 'all';
   document.getElementById('analistaSelect').value = 'all';
+  document.getElementById('projectFilter').value = '';
   updateFilters();
   scrollToTop();
 }
@@ -1406,6 +1423,34 @@ function getFilteredData() {
   return filtered;
 }
 
+// ========== FILTRO DE TABELA POR PROJETO ==========
+function filterTableByProject() {
+  const input = document.getElementById('projectFilter');
+  const filter = cleanKey(input.value);
+  const tbody = document.getElementById('tbody');
+  const rows = tbody.getElementsByTagName('tr');
+  
+  let visibleCount = 0;
+  
+  for (let i = 0; i < rows.length; i++) {
+    const projectCell = rows[i].getElementsByTagName('td')[0];
+    if (projectCell) {
+      const projectName = cleanKey(projectCell.textContent || projectCell.innerText);
+      if (projectName.includes(filter)) {
+        rows[i].style.display = '';
+        visibleCount++;
+      } else {
+        rows[i].style.display = 'none';
+      }
+    }
+  }
+  
+  // Se não houver resultados, mostrar mensagem
+  if (visibleCount === 0 && filter !== '') {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="no-results"><i class="fa-solid fa-search"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Tente outro termo de busca</p></div></td></tr>`;
+  }
+}
+
 // ========== RENDER ==========
 function renderAll() {
   const filtered = getFilteredData();
@@ -1429,9 +1474,14 @@ function renderTable(p) {
     // Escapar aspas para o onclick
     const projetoEscaped = x.Projeto.replace(/'/g, "\\'").replace(/`/g, "\\`");
     
+    // Aplicar cor da planilha na data prevista
+    const dataStyle = x.CorDataPrevista 
+      ? `style="color: ${x.CorDataPrevista}; font-weight: 700;"` 
+      : '';
+    
     return `<tr>
       <td><span class="project-name" onclick="openProjectModal('${projetoEscaped}')">${x.Projeto}</span></td>
-      <td>${x.DataPrevista}</td>
+      <td><span ${dataStyle}>${x.DataPrevista}</span></td>
       <td class="analista-bold ${analistaClass}">${x.Analista}</td>
       <td><span class="badge ${statusClass}">${x.Status}</span></td>
       <td><div class="progress"><div class="bar"><div class="fill" style="width:${perc}%"></div></div><strong style="width:35px;text-align:right">${perc}%</strong></div></td>
