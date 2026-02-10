@@ -1173,6 +1173,20 @@ function calcularEvolucaoPonderada(projeto) {
   // Percentual = (pontuação alcançada / total possível) × 100
   const percentual = (pontuacaoPonderada / Total) * 100;
   
+  // Log detalhado para projetos com nome específico
+  if (projeto.Projeto && projeto.Projeto.toLowerCase().includes('temu')) {
+    debugLog(`🔍 CÁLCULO DETALHADO - ${projeto.Projeto}:`, 'info');
+    debugLog(`   Concluídas: ${Concluidas} × ${pesoConcluidas} = ${Concluidas * pesoConcluidas}`, 'info');
+    debugLog(`   Validação: ${Validacao} × ${pesoValidacao} = ${Validacao * pesoValidacao}`, 'info');
+    debugLog(`   Liberação: ${Liberacao} × ${pesoLiberacao} = ${Liberacao * pesoLiberacao}`, 'info');
+    debugLog(`   Execução: ${Execucao} × ${pesoExecucao} = ${Execucao * pesoExecucao}`, 'info');
+    debugLog(`   Início: ${Inicio} × ${pesoInicio} = ${Inicio * pesoInicio}`, 'info');
+    debugLog(`   Descrição: ${Descricao} × ${pesoDescricao} = ${Descricao * pesoDescricao}`, 'info');
+    debugLog(`   Total: ${Total}`, 'info');
+    debugLog(`   Pontuação: ${pontuacaoPonderada.toFixed(2)}`, 'info');
+    debugLog(`   Percentual: ${percentual.toFixed(2)}%`, 'success');
+  }
+  
   return Math.min(Math.round(percentual), 100);
 }
 
@@ -1253,9 +1267,9 @@ async function fetchData() {
     if (lines.length < 2) throw new Error("Planilha vazia");
     
     const headers = parseCSVLine(lines[0]);
-    debugLog(`📋 Headers da planilha (${headers.length} colunas):`, 'info');
+    debugLog(`📋 TODOS OS HEADERS DA PLANILHA (${headers.length} colunas):`, 'info');
     headers.forEach((h, i) => {
-      debugLog(`   Col ${i}: "${h}" (clean: "${cleanKey(h)}")`, 'info');
+      debugLog(`   Col ${i}: "${h}" → clean: "${cleanKey(h)}"`, 'info');
     });
     
     const colMap = {};
@@ -1276,12 +1290,12 @@ async function fetchData() {
       obs: findCol(['obs', 'observacao', 'observacoes']),
       dataPrevista: findCol(['data prevista', 'previsao', 'prazo']),
       corDataPrevista: findCol(['cor data prevista', 'cor previsao', 'cor prazo']),
-      concluidas: findCol(['concluidas']),
-      validacao: findCol(['em validacao', 'validacao']),
-      liberacao: findCol(['ag liberacao', 'ag. liberacao', 'liberacao']),
-      execucao: findCol(['em execucao', 'execucao']),
-      inicio: findCol(['ag inicio', 'ag. inicio', 'inicio']),
-      descricao: findCol(['ag descricao', 'ag. descricao', 'descricao'])
+      concluidas: findCol(['concluidas', 'concluida']),
+      validacao: findCol(['em validacao', 'validacao', 'em validacao']),
+      liberacao: findCol(['ag liberacao', 'ag. liberacao', 'ag liberacao', 'liberacao']),
+      execucao: findCol(['em execucao', 'execucao', 'em execucao']),
+      inicio: findCol(['ag inicio', 'ag. inicio', 'ag inicio', 'inicio']),
+      descricao: findCol(['ag descricao', 'ag. descricao', 'ag descricao', 'descricao'])
     };
     
     debugLog(`🔍 Mapeamento de colunas:`, 'info');
