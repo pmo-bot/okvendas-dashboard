@@ -1284,18 +1284,18 @@ async function fetchData() {
     };
     
     const colIdx = {
-      projeto: findCol(['projeto', 'nome']),
-      status: findCol(['status', 'situacao']),
-      analista: findCol(['analista', 'responsavel']),
-      obs: findCol(['obs', 'observacao', 'observacoes']),
-      dataPrevista: findCol(['data prevista', 'previsao', 'prazo']),
-      corDataPrevista: findCol(['cor data prevista', 'cor previsao', 'cor prazo']),
-      concluidas: findCol(['concluidas', 'concluida']),
-      validacao: findCol(['em validacao', 'validacao', 'em validacao']),
-      liberacao: findCol(['ag liberacao', 'ag. liberacao', 'ag liberacao', 'liberacao']),
-      execucao: findCol(['em execucao', 'execucao', 'em execucao']),
-      inicio: findCol(['ag inicio', 'ag. inicio', 'ag inicio', 'inicio']),
-      descricao: findCol(['ag descricao', 'ag. descricao', 'ag descricao', 'descricao'])
+      projeto: findCol(['projeto']),
+      status: findCol(['status']),
+      analista: findCol(['analista']),
+      obs: findCol(['obs']),
+      dataPrevista: findCol(['data prevista']),
+      corDataPrevista: findCol(['cor data prevista']),
+      concluidas: findCol(['concluidas']),
+      validacao: findCol(['em validacao']),
+      liberacao: findCol(['ag liberacao']),
+      execucao: findCol(['em execucao']),
+      inicio: findCol(['ag inicio']),
+      descricao: findCol(['ag descricao'])
     };
     
     debugLog(`🔍 Mapeamento de colunas:`, 'info');
