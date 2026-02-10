@@ -1034,7 +1034,7 @@ tr:hover{background:#f8fafc}
 
 <script>
 // ========== CONFIGURAÇÃO ==========
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=378165818&single=true&output=csv';
 
 let projectData = [];
 let charts = {};
@@ -1272,11 +1272,11 @@ async function fetchData() {
       debugLog(`   Col ${i}: "${h}" → clean: "${cleanKey(h)}"`, 'info');
     });
     
-    // Ordem EXATA das colunas na planilha (informada pelo usuário):
+    // Ordem EXATA das colunas na planilha PMO:
     // 0: Projeto
     // 1: Status
     // 2: Data prevista
-    // 3: Cor Data Prevista (★ NOVA COLUNA)
+    // 3: Cor Data Prevista
     // 4: Analista
     // 5: Concluídas
     // 6: Em validação
@@ -1301,10 +1301,19 @@ async function fetchData() {
       obs: 11
     };
     
-    debugLog(`🔍 Mapeamento FIXO por posição:`, 'info');
-    Object.entries(colIdx).forEach(([key, idx]) => {
-      debugLog(`   ${key}: coluna ${idx}`, 'info');
-    });
+    debugLog(`🔍 Mapeamento de colunas (FIXO):`, 'info');
+    debugLog(`   Projeto: col ${colIdx.projeto}`, 'info');
+    debugLog(`   Status: col ${colIdx.status}`, 'info');
+    debugLog(`   Data Prevista: col ${colIdx.dataPrevista}`, 'info');
+    debugLog(`   Cor Data Prevista: col ${colIdx.corDataPrevista}`, 'info');
+    debugLog(`   Analista: col ${colIdx.analista}`, 'info');
+    debugLog(`   Concluídas: col ${colIdx.concluidas}`, 'info');
+    debugLog(`   Validação: col ${colIdx.validacao}`, 'info');
+    debugLog(`   Liberação: col ${colIdx.liberacao}`, 'info');
+    debugLog(`   Execução: col ${colIdx.execucao}`, 'info');
+    debugLog(`   Início: col ${colIdx.inicio}`, 'info');
+    debugLog(`   Descrição: col ${colIdx.descricao}`, 'info');
+    debugLog(`   OBS: col ${colIdx.obs}`, 'info');
     
     projectData = [];
     
