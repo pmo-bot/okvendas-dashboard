@@ -892,7 +892,18 @@ tr:hover{background:#f8fafc}
   <th>Data Prevista</th>
   <th>Analista</th>
   <th>Status</th>
-  <th>Evolução</th>
+  <th style="position: relative;">
+    Evolução 
+    <i class="fa-solid fa-circle-info" 
+       style="font-size: 10px; margin-left: 4px; cursor: help; color: var(--blue);"
+       title="Cálculo Ponderado:
+• Concluídas: 100%
+• Em Validação: 85%
+• Ag. Liberação: 60%
+• Em Execução: 40%
+• Ag. Início: 15%
+• Ag. Descrição: 5%"></i>
+  </th>
   <th>Info</th>
 </tr>
 </thead>
@@ -917,6 +928,12 @@ tr:hover{background:#f8fafc}
       <div class="info-row">
         <span class="info-label">Data Prevista:</span>
         <span class="info-value" id="mData"></span>
+      </div>
+      <div class="info-row" style="border-bottom: none; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 8px; margin-top: 8px;">
+        <span class="info-label" style="color: var(--blue); font-weight: 700;">
+          <i class="fa-solid fa-chart-line"></i> Evolução Ponderada:
+        </span>
+        <span class="info-value" style="color: var(--blue); font-weight: 800; font-size: 18px;" id="mEvolucao">0%</span>
       </div>
     </div>
     
@@ -1017,7 +1034,7 @@ tr:hover{background:#f8fafc}
 
 <script>
 // ========== CONFIGURAÇÃO ==========
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=378165818&single=true&output=csv';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=1278980969&single=true&output=csv';
 
 let projectData = [];
 let charts = {};
@@ -1128,6 +1145,35 @@ function getSemaforoColor(diferenca) {
   if (Math.abs(diferenca) <= 10) return 'verde';
   if (Math.abs(diferenca) <= 25) return 'amarelo';
   return 'vermelho';
+}
+
+// ========== CÁLCULO PONDERADO DE EVOLUÇÃO ==========
+function calcularEvolucaoPonderada(projeto) {
+  const { Concluidas, Validacao, Liberacao, Execucao, Inicio, Descricao, Total } = projeto;
+  
+  if (Total === 0) return 0;
+  
+  // Pesos para cada estágio (quanto cada etapa representa em termos de conclusão)
+  const pesoConcluidas = 1.00;    // 100% - Tarefa finalizada
+  const pesoValidacao = 0.85;     // 85% - Quase pronta, só falta validar
+  const pesoLiberacao = 0.60;     // 60% - Aguardando aprovação para seguir
+  const pesoExecucao = 0.40;      // 40% - Em desenvolvimento ativo
+  const pesoInicio = 0.15;        // 15% - Planejada, pronta para começar
+  const pesoDescricao = 0.05;     // 5% - Apenas mapeada, precisa detalhar
+  
+  // Calcular pontuação total baseada nos pesos
+  const pontuacaoPonderada = 
+    (Concluidas * pesoConcluidas) +
+    (Validacao * pesoValidacao) +
+    (Liberacao * pesoLiberacao) +
+    (Execucao * pesoExecucao) +
+    (Inicio * pesoInicio) +
+    (Descricao * pesoDescricao);
+  
+  // Percentual = (pontuação alcançada / total possível) × 100
+  const percentual = (pontuacaoPonderada / Total) * 100;
+  
+  return Math.min(Math.round(percentual), 100);
 }
 
 function parseCSVLine(line) {
@@ -1248,6 +1294,7 @@ async function fetchData() {
     debugLog(`   Execução: col ${colIdx.execucao}`, 'info');
     debugLog(`   Início: col ${colIdx.inicio}`, 'info');
     debugLog(`   Descrição: col ${colIdx.descricao}`, 'info');
+    debugLog(`   Cor Data Prevista: col ${colIdx.corDataPrevista}`, 'info');
     
     projectData = [];
     
@@ -1289,6 +1336,8 @@ async function fetchData() {
       // Log detalhado do primeiro projeto e de "Segurança de Pagamento"
       if (i === 1 || projeto.Projeto.toLowerCase().includes('seguranca')) {
         debugLog(`📦 Projeto: ${projeto.Projeto}`, 'info');
+        debugLog(`   Data Prevista: ${projeto.DataPrevista}`, 'info');
+        debugLog(`   Cor Data Prevista: "${projeto.CorDataPrevista}"`, 'info');
         debugLog(`   Concluídas: ${concluidas}, Validação: ${validacao}, Liberação: ${liberacao}`, 'info');
         debugLog(`   Execução: ${execucao}, Início: ${inicio}, Descrição: ${descricao}`, 'info');
         debugLog(`   Total: ${total}`, 'info');
@@ -1467,7 +1516,7 @@ function renderTable(p) {
   }
   
   tb.innerHTML = p.map(x => {
-    const perc = x.Total > 0 ? Math.round((x.Concluidas / x.Total) * 100) : 0;
+    const perc = calcularEvolucaoPonderada(x);
     const statusClass = cleanKey(x.Status).replace(/\./g, "").replace(/\s/g, '-');
     const analistaClass = getAnalistaClass(x.Analista);
     
@@ -1514,7 +1563,9 @@ function renderCharts(p) {
 function renderStatusChart(p) {
   const statusCount = {};
   p.forEach(x => {
-    statusCount[x.Status] = (statusCount[x.Status] || 0) + 1;
+    if (x.Status) {
+      statusCount[x.Status] = (statusCount[x.Status] || 0) + 1;
+    }
   });
   
   // Destruir o gráfico de status antes de recriá-lo
@@ -1524,30 +1575,56 @@ function renderStatusChart(p) {
   const statusLabels = Object.keys(statusCount);
   const statusColors = statusLabels.map(s => getStatusColor(s));
   
+  // Validar se há dados para renderizar
+  if (statusLabels.length === 0) {
+    debugLog('⚠️ Nenhum status encontrado para renderizar', 'warning');
+    return;
+  }
+  
   const statusCanvas = document.getElementById('status');
   if (!statusCanvas) {
     debugLog('⚠️ Canvas de status não encontrado', 'warning');
     return;
   }
   
-  charts.status = new Chart(statusCanvas, {
-    type: 'doughnut',
-    data: {
-      labels: statusLabels,
-      datasets: [{ data: Object.values(statusCount), backgroundColor: statusColors, borderWidth: 0, hoverOffset: 10 }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '70%',
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } },
-        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} projeto(s)` } }
+  try {
+    charts.status = new Chart(statusCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: statusLabels,
+        datasets: [{ 
+          data: Object.values(statusCount), 
+          backgroundColor: statusColors, 
+          borderWidth: 0, 
+          hoverOffset: 10 
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: { 
+            position: 'bottom', 
+            labels: { 
+              padding: 15, 
+              usePointStyle: true, 
+              font: { size: 11, weight: '600' } 
+            } 
+          },
+          tooltip: { 
+            callbacks: { 
+              label: (ctx) => `${ctx.label}: ${ctx.parsed} projeto(s)` 
+            } 
+          }
+        }
       }
-    }
-  });
-  
-  debugLog(`✅ Gráfico de status criado com ${statusLabels.length} categorias`, 'success');
+    });
+    
+    debugLog(`✅ Gráfico de status criado com ${statusLabels.length} categorias`, 'success');
+  } catch (error) {
+    debugLog(`❌ Erro ao criar gráfico de status: ${error.message}`, 'error');
+  }
 }
 
 function updateAnalistaChart() {
@@ -1588,25 +1665,35 @@ function updateAnalistaChart() {
     return;
   }
   
-  charts.analistas = new Chart(analistasCanvas, {
-    type: 'bar',
-    data: {
-      labels: analistaLabels,
-      datasets: [{ data: Object.values(analistasCount), backgroundColor: analistaColors, borderRadius: 6, barThickness: 20 }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} projeto(s)` } }
-      },
-      scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
-  });
+  // Validar se há dados
+  if (analistaLabels.length === 0) {
+    debugLog('⚠️ Nenhum analista encontrado para renderizar', 'warning');
+    return;
+  }
   
-  debugLog(`✅ Gráfico de analistas criado com ${analistaLabels.length} analistas`, 'success');
+  try {
+    charts.analistas = new Chart(analistasCanvas, {
+      type: 'bar',
+      data: {
+        labels: analistaLabels,
+        datasets: [{ data: Object.values(analistasCount), backgroundColor: analistaColors, borderRadius: 6, barThickness: 20 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} projeto(s)` } }
+        },
+        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+      }
+    });
+    
+    debugLog(`✅ Gráfico de analistas criado com ${analistaLabels.length} analistas`, 'success');
+  } catch (error) {
+    debugLog(`❌ Erro ao criar gráfico de analistas: ${error.message}`, 'error');
+  }
 }
 
 function updateCurvaS() {
@@ -1619,7 +1706,7 @@ function updateCurvaS() {
   if (selectedProject === 'all') {
     const filtered = getFilteredData();
     const media = filtered.length > 0 
-      ? Math.round(filtered.reduce((acc, curr) => acc + (curr.Total > 0 ? (curr.Concluidas / curr.Total) * 100 : 0), 0) / filtered.length)
+      ? Math.round(filtered.reduce((acc, curr) => acc + calcularEvolucaoPonderada(curr), 0) / filtered.length)
       : 0;
     
     diferenca = 100 - media;
@@ -1634,7 +1721,7 @@ function updateCurvaS() {
   } else {
     const projeto = projectData.find(p => p.Projeto === selectedProject);
     if (projeto) {
-      const perc = projeto.Total > 0 ? Math.round((projeto.Concluidas / projeto.Total) * 100) : 0;
+      const perc = calcularEvolucaoPonderada(projeto);
       diferenca = 100 - perc;
       const semaforo = getSemaforoColor(diferenca);
       cor = semaforo === 'verde' ? '#10b981' : semaforo === 'amarelo' ? '#f59e0b' : '#ef4444';
@@ -1659,27 +1746,31 @@ function updateCurvaS() {
     return;
   }
   
-  charts.curve = new Chart(curveCanvas, {
-    type: 'line',
-    data: {
-      labels: ['Início', 'Progresso Atual'],
-      datasets: [
-        { label: 'Meta Planejada', data: [0, 100], borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 2, fill: false, tension: 0.4, pointRadius: 4 },
-        { label: label, data: data, borderColor: cor, backgroundColor: cor + '20', fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } },
-        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+  try {
+    charts.curve = new Chart(curveCanvas, {
+      type: 'line',
+      data: {
+        labels: ['Início', 'Progresso Atual'],
+        datasets: [
+          { label: 'Meta Planejada', data: [0, 100], borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 2, fill: false, tension: 0.4, pointRadius: 4 },
+          { label: label, data: data, borderColor: cor, backgroundColor: cor + '20', fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7 }
+        ]
       },
-      scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } }
-    }
-  });
-  
-  debugLog(`✅ Curva S criada para: ${selectedProject === 'all' ? 'Visão Geral' : selectedProject}`, 'success');
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+        },
+        scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } }
+      }
+    });
+    
+    debugLog(`✅ Curva S criada para: ${selectedProject === 'all' ? 'Visão Geral' : selectedProject}`, 'success');
+  } catch (error) {
+    debugLog(`❌ Erro ao criar Curva S: ${error.message}`, 'error');
+  }
 }
 
 // ========== MODAL ==========
@@ -1692,6 +1783,11 @@ function openProjectModal(projectName) {
   document.getElementById("mAnalista").textContent = projeto.Analista;
   document.getElementById("mStatus").textContent = projeto.Status;
   document.getElementById("mData").textContent = projeto.DataPrevista;
+  
+  // Calcular e exibir evolução ponderada
+  const evolucaoPonderada = calcularEvolucaoPonderada(projeto);
+  document.getElementById("mEvolucao").textContent = `${evolucaoPonderada}%`;
+  
   document.getElementById("mConcluidas").textContent = projeto.Concluidas;
   document.getElementById("mValidacao").textContent = projeto.Validacao;
   document.getElementById("mLiberacao").textContent = projeto.Liberacao;
