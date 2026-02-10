@@ -1272,43 +1272,39 @@ async function fetchData() {
       debugLog(`   Col ${i}: "${h}" → clean: "${cleanKey(h)}"`, 'info');
     });
     
-    const colMap = {};
-    headers.forEach((h, i) => colMap[cleanKey(h)] = i);
-    
-    const findCol = (names) => {
-      for (let n of names) {
-        const idx = colMap[cleanKey(n)];
-        if (idx !== undefined) return idx;
-      }
-      return -1;
-    };
+    // Ordem EXATA das colunas na planilha (informada pelo usuário):
+    // 0: Projeto
+    // 1: Status
+    // 2: Data prevista
+    // 3: Cor Data Prevista (★ NOVA COLUNA)
+    // 4: Analista
+    // 5: Concluídas
+    // 6: Em validação
+    // 7: Ag. Liberação
+    // 8: Em execução
+    // 9: Ag. início
+    // 10: Ag. Descrição
+    // 11: OBS
     
     const colIdx = {
-      projeto: findCol(['projeto']),
-      status: findCol(['status']),
-      analista: findCol(['analista']),
-      obs: findCol(['obs']),
-      dataPrevista: findCol(['data prevista']),
-      corDataPrevista: findCol(['cor data prevista']),
-      concluidas: findCol(['concluidas']),
-      validacao: findCol(['em validacao']),
-      liberacao: findCol(['ag liberacao']),
-      execucao: findCol(['em execucao']),
-      inicio: findCol(['ag inicio']),
-      descricao: findCol(['ag descricao'])
+      projeto: 0,
+      status: 1,
+      dataPrevista: 2,
+      corDataPrevista: 3,
+      analista: 4,
+      concluidas: 5,
+      validacao: 6,
+      liberacao: 7,
+      execucao: 8,
+      inicio: 9,
+      descricao: 10,
+      obs: 11
     };
     
-    debugLog(`🔍 Mapeamento de colunas:`, 'info');
-    debugLog(`   Projeto: col ${colIdx.projeto}`, 'info');
-    debugLog(`   Status: col ${colIdx.status}`, 'info');
-    debugLog(`   Analista: col ${colIdx.analista}`, 'info');
-    debugLog(`   Concluídas: col ${colIdx.concluidas}`, 'info');
-    debugLog(`   Validação: col ${colIdx.validacao}`, 'info');
-    debugLog(`   Liberação: col ${colIdx.liberacao}`, 'info');
-    debugLog(`   Execução: col ${colIdx.execucao}`, 'info');
-    debugLog(`   Início: col ${colIdx.inicio}`, 'info');
-    debugLog(`   Descrição: col ${colIdx.descricao}`, 'info');
-    debugLog(`   Cor Data Prevista: col ${colIdx.corDataPrevista}`, 'info');
+    debugLog(`🔍 Mapeamento FIXO por posição:`, 'info');
+    Object.entries(colIdx).forEach(([key, idx]) => {
+      debugLog(`   ${key}: coluna ${idx}`, 'info');
+    });
     
     projectData = [];
     
