@@ -1047,6 +1047,7 @@ const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bH
 let projectData = [];
 let charts = {};
 let currentFilters = { analista: null, status: null };
+let isFetching = false;
 
 // ========== ORDENAÇÃO DE STATUS ==========
 // Prioridade: Em Andamento (1) > Ag. Planejamento (2) > Ag. Cliente (3) > Paralisado (4) > outros (5)
@@ -1215,16 +1216,40 @@ function destroyAllCharts() {
 
 // ========== FETCH DATA ==========
 async function fetchData() {
+  // Evita chamadas simultâneas
+  if (isFetching) {
+    debugLog('⏳ Já está carregando, aguarde...', 'warning');
+    return;
+  }
+  
+  isFetching = true;
+  
   const loadingEl = document.getElementById('loading');
   const refreshIcon = document.getElementById('refresh-icon');
+  const refreshBtn = refreshIcon?.closest('button');
   
   loadingEl.style.display = 'block';
   if (refreshIcon) refreshIcon.classList.add('spinning');
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+    refreshBtn.style.opacity = '0.7';
+    refreshBtn.style.cursor = 'not-allowed';
+  }
   debugLog('🔄 Iniciando carregamento...');
   
   try {
-    const url = `${SHEET_CSV_URL}&cachebust=${Date.now()}`;
-    const response = await fetch(url);
+    // Força bypass total de cache com timestamp + random
+    const cacheBust = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const url = `${SHEET_CSV_URL}&cachebust=${cacheBust}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
     if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     
     const csvData = await response.text();
@@ -1282,8 +1307,14 @@ async function fetchData() {
     debugLog(`❌ ERRO: ${error.message}`, 'error');
     alert(`Erro ao carregar dados:\n\n${error.message}`);
   } finally {
+    isFetching = false;
     loadingEl.style.display = 'none';
     if (refreshIcon) refreshIcon.classList.remove('spinning');
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.style.opacity = '';
+      refreshBtn.style.cursor = '';
+    }
   }
 }
 
