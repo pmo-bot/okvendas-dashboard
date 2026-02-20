@@ -1238,18 +1238,10 @@ async function fetchData() {
   debugLog('🔄 Iniciando carregamento...');
   
   try {
-    // Força bypass total de cache com timestamp + random
+    // Cachebust na URL para forçar nova requisição ao Google Sheets
     const cacheBust = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const url = `${SHEET_CSV_URL}&cachebust=${cacheBust}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     
     const csvData = await response.text();
