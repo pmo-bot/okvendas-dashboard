@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PMO | OkVendas</title>
 
-<!-- Fontes e libs -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -19,6 +18,7 @@
   --yellow:#f59e0b;
   --red:#ef4444;
   --purple:#8b5cf6;
+  --orange:#f97316;
   --text:#334155;
   --muted:#94a3b8;
   --border:#e5e7eb;
@@ -43,6 +43,9 @@
   --status-planejado-text: #475569;
   --status-concluido-bg: #dbeafe;
   --status-concluido-text: #1e40af;
+  /* Ag. Planejamento - laranja âmbar */
+  --status-agplanejamento-bg: #fff7ed;
+  --status-agplanejamento-text: #c2410c;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -159,16 +162,25 @@ header span{
   gap: 8px;
 }
 
+/* KPIs: 5 colunas com minmax menor para caber 5 */
 .kpis{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:16px;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
   margin-bottom:30px;
+}
+
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
 }
 
 .kpi{
   background:var(--panel);
-  padding:24px;
+  padding:20px 16px;
   border-radius:18px;
   box-shadow:var(--shadow);
   text-align:center;
@@ -191,26 +203,27 @@ header span{
 
 .kpi i{
   font-size:18px;
-  margin-bottom:10px;
+  margin-bottom:8px;
   color: var(--blue);
 }
 
 .kpi h3{
-  font-size:12px;
+  font-size:11px;
   text-transform:uppercase;
   color:var(--muted);
   margin-bottom:6px;
+  letter-spacing: 0.3px;
 }
 
 .kpi p{
-  font-size:32px;
+  font-size:28px;
   font-weight:800;
 }
 
 .kpi-hint {
   font-size: 10px;
   color: var(--muted);
-  margin-top: 8px;
+  margin-top: 6px;
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -326,7 +339,7 @@ table{
   width:100%;
   border-collapse:collapse;
   font-size:14px;
-  min-width: 900px;
+  min-width: 750px;
 }
 
 th{
@@ -342,19 +355,19 @@ th{
   border-bottom:2px solid var(--border);
 }
 
-th:nth-child(1) { width: 20%; }
-th:nth-child(2) { width: 12%; }
-th:nth-child(3) { width: 12%; text-align: center; }
-th:nth-child(4) { width: 12%; text-align: center; }
-th:nth-child(5) { width: 20%; }
-th:nth-child(6) { width: 8%; text-align: center; }
+/* 5 colunas agora (sem Info) */
+th:nth-child(1) { width: 25%; }
+th:nth-child(2) { width: 14%; }
+th:nth-child(3) { width: 14%; text-align: center; }
+th:nth-child(4) { width: 14%; text-align: center; }
+th:nth-child(5) { width: 33%; }
 
 td{
   padding:14px 12px;
   border-bottom:1px solid #f1f5f9;
 }
 
-td:nth-child(3), td:nth-child(4), td:nth-child(6) {
+td:nth-child(3), td:nth-child(4) {
   text-align: center;
 }
 
@@ -405,6 +418,15 @@ tr:hover{background:#f8fafc}
 .badge.concluido{
   background:var(--status-concluido-bg);
   color:var(--status-concluido-text);
+}
+
+/* Ag. Planejamento */
+.badge.agplanejamento,
+.badge.ag-planejamento,
+.badge.aguardandoplanejamento,
+.badge.planejamento {
+  background:var(--status-agplanejamento-bg);
+  color:var(--status-agplanejamento-text);
 }
 
 .analista-bold { font-weight: 800; }
@@ -664,14 +686,8 @@ tr:hover{background:#f8fafc}
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .float-btn::before {
@@ -772,7 +788,6 @@ tr:hover{background:#f8fafc}
 @media (max-width: 768px) {
   body { padding: 12px; }
   header { flex-direction: column; align-items: flex-start; }
-  .kpis { grid-template-columns: 1fr; }
   .charts { grid-template-columns: 1fr; }
   .table-box { padding: 16px; }
   .debug-panel { width: calc(100vw - 40px); bottom: 150px; right: 12px; }
@@ -809,6 +824,7 @@ tr:hover{background:#f8fafc}
   <div id="filterTags"></div>
 </div>
 
+<!-- KPIs: 5 cards -->
 <div class="kpis">
   <div class="kpi active" onclick="filterByStatus('all')">
     <i class="fa-solid fa-folder-tree"></i>
@@ -822,16 +838,22 @@ tr:hover{background:#f8fafc}
     <p id="kAtivos">0</p>
     <div class="kpi-hint">Clique para filtrar</div>
   </div>
-  <div class="kpi" onclick="filterByStatus('paralisado')">
-    <i class="fa-solid fa-pause"></i>
-    <h3>Pausados</h3>
-    <p id="kPausados">0</p>
+  <div class="kpi" onclick="filterByStatus('planejamento')">
+    <i class="fa-solid fa-calendar-days"></i>
+    <h3>Ag. Planejamento</h3>
+    <p id="kPlanejamento">0</p>
     <div class="kpi-hint">Clique para filtrar</div>
   </div>
   <div class="kpi" onclick="filterByStatus('cliente')">
     <i class="fa-solid fa-clock-rotate-left"></i>
     <h3>Ag. Cliente</h3>
     <p id="kCliente">0</p>
+    <div class="kpi-hint">Clique para filtrar</div>
+  </div>
+  <div class="kpi" onclick="filterByStatus('paralisado')">
+    <i class="fa-solid fa-pause"></i>
+    <h3>Pausados</h3>
+    <p id="kPausados">0</p>
     <div class="kpi-hint">Clique para filtrar</div>
   </div>
 </div>
@@ -904,7 +926,6 @@ tr:hover{background:#f8fafc}
 • Ag. Início: 15%
 • Ag. Descrição: 5%"></i>
   </th>
-  <th>Info</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -913,6 +934,7 @@ tr:hover{background:#f8fafc}
 
 </div>
 
+<!-- MODAL -->
 <div id="modal">
   <div class="modal-content">
     <h2 id="mTitle"></h2>
@@ -947,9 +969,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #dcfce7; color: #166534;">
-            <i class="fa-solid fa-check"></i>
-          </div>
+          <div class="task-icon" style="background: #dcfce7; color: #166534;"><i class="fa-solid fa-check"></i></div>
           Concluídas
         </div>
         <div class="task-count" id="mConcluidas">0</div>
@@ -957,9 +977,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #dbeafe; color: #1e40af;">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </div>
+          <div class="task-icon" style="background: #dbeafe; color: #1e40af;"><i class="fa-solid fa-magnifying-glass"></i></div>
           Em Validação
         </div>
         <div class="task-count" id="mValidacao">0</div>
@@ -967,9 +985,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #fef3c7; color: #a16207;">
-            <i class="fa-solid fa-unlock"></i>
-          </div>
+          <div class="task-icon" style="background: #fef3c7; color: #a16207;"><i class="fa-solid fa-unlock"></i></div>
           Ag. Liberação
         </div>
         <div class="task-count" id="mLiberacao">0</div>
@@ -977,9 +993,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #e0e7ff; color: #4338ca;">
-            <i class="fa-solid fa-gears"></i>
-          </div>
+          <div class="task-icon" style="background: #e0e7ff; color: #4338ca;"><i class="fa-solid fa-gears"></i></div>
           Em Execução
         </div>
         <div class="task-count" id="mExecucao">0</div>
@@ -987,9 +1001,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #f3e8ff; color: #7e22ce;">
-            <i class="fa-solid fa-hourglass-start"></i>
-          </div>
+          <div class="task-icon" style="background: #f3e8ff; color: #7e22ce;"><i class="fa-solid fa-hourglass-start"></i></div>
           Ag. Início
         </div>
         <div class="task-count" id="mInicio">0</div>
@@ -997,9 +1009,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item">
         <div class="task-label">
-          <div class="task-icon" style="background: #fee2e2; color: #991b1b;">
-            <i class="fa-solid fa-file-lines"></i>
-          </div>
+          <div class="task-icon" style="background: #fee2e2; color: #991b1b;"><i class="fa-solid fa-file-lines"></i></div>
           Ag. Descrição
         </div>
         <div class="task-count" id="mDescricao">0</div>
@@ -1007,9 +1017,7 @@ tr:hover{background:#f8fafc}
       
       <div class="task-item" style="background: #f0f9ff; border: 2px solid var(--blue);">
         <div class="task-label" style="font-weight: 700; color: var(--blue);">
-          <div class="task-icon" style="background: var(--blue); color: white;">
-            <i class="fa-solid fa-list"></i>
-          </div>
+          <div class="task-icon" style="background: var(--blue); color: white;"><i class="fa-solid fa-list"></i></div>
           Total de Tarefas
         </div>
         <div class="task-count" id="mTotal" style="font-size: 22px;">0</div>
@@ -1040,6 +1048,17 @@ let projectData = [];
 let charts = {};
 let currentFilters = { analista: null, status: null };
 
+// ========== ORDENAÇÃO DE STATUS ==========
+// Prioridade: Em Andamento (1) > Ag. Planejamento (2) > Ag. Cliente (3) > Paralisado (4) > outros (5)
+function getStatusOrder(status) {
+  const s = cleanKey(status);
+  if (s.includes('andamento')) return 1;
+  if (s.includes('planejamento')) return 2;
+  if (s.includes('cliente')) return 3;
+  if (s.includes('paralisado')) return 4;
+  return 5;
+}
+
 // ========== SCROLL TO TOP ==========
 window.addEventListener('scroll', () => {
   const scrollTopBtn = document.getElementById('scrollTopBtn');
@@ -1051,10 +1070,7 @@ window.addEventListener('scroll', () => {
 });
 
 function scrollToTop() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ========== DEBUG ==========
@@ -1065,7 +1081,6 @@ function debugLog(message, type = 'info') {
   const timestamp = new Date().toLocaleTimeString('pt-BR');
   debugLogs.push({ timestamp, message, type });
   if (debugLogs.length > MAX_DEBUG_LOGS) debugLogs.shift();
-  
   const emoji = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
   console.log(`${emoji} [${timestamp}] ${message}`);
   updateDebugPanel();
@@ -1093,14 +1108,13 @@ function updateDebugPanel() {
 // ========== FUNÇÕES AUXILIARES ==========
 function cleanKey(str) {
   if (!str) return "";
-  // Remove acentos, espaços extras, pontos e converte para minúsculas
   return str.toString()
     .toLowerCase()
     .trim()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")  // Remove acentos
-    .replace(/\./g, "")                 // Remove pontos
-    .replace(/\s+/g, " ");              // Normaliza espaços
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ");
 }
 
 function getAnalistaClass(nome) {
@@ -1136,6 +1150,7 @@ function getStatusColor(status) {
   if (s.includes('andamento')) return '#10b981';
   if (s.includes('paralisado')) return '#ef4444';
   if (s.includes('cliente')) return '#8b5cf6';
+  if (s.includes('planejamento')) return '#f97316';
   if (s.includes('planejado')) return '#94a3b8';
   if (s.includes('concluido')) return '#0ea5e9';
   return '#f59e0b';
@@ -1147,47 +1162,20 @@ function getSemaforoColor(diferenca) {
   return 'vermelho';
 }
 
-// ========== CÁLCULO PONDERADO DE EVOLUÇÃO ==========
+// ========== CÁLCULO PONDERADO ==========
 function calcularEvolucaoPonderada(projeto) {
   const { Concluidas, Validacao, Liberacao, Execucao, Inicio, Descricao, Total } = projeto;
-  
   if (Total === 0) return 0;
   
-  // Pesos para cada estágio (quanto cada etapa representa em termos de conclusão)
-  const pesoConcluidas = 1.00;    // 100% - Tarefa finalizada
-  const pesoValidacao = 0.85;     // 85% - Quase pronta, só falta validar
-  const pesoLiberacao = 0.60;     // 60% - Aguardando aprovação para seguir
-  const pesoExecucao = 0.40;      // 40% - Em desenvolvimento ativo
-  const pesoInicio = 0.15;        // 15% - Planejada, pronta para começar
-  const pesoDescricao = 0.05;     // 5% - Apenas mapeada, precisa detalhar
-  
-  // Calcular pontuação total baseada nos pesos
   const pontuacaoPonderada = 
-    (Concluidas * pesoConcluidas) +
-    (Validacao * pesoValidacao) +
-    (Liberacao * pesoLiberacao) +
-    (Execucao * pesoExecucao) +
-    (Inicio * pesoInicio) +
-    (Descricao * pesoDescricao);
+    (Concluidas * 1.00) +
+    (Validacao  * 0.85) +
+    (Liberacao  * 0.60) +
+    (Execucao   * 0.40) +
+    (Inicio     * 0.15) +
+    (Descricao  * 0.05);
   
-  // Percentual = (pontuação alcançada / total possível) × 100
-  const percentual = (pontuacaoPonderada / Total) * 100;
-  
-  // Log detalhado para projetos com nome específico
-  if (projeto.Projeto && projeto.Projeto.toLowerCase().includes('temu')) {
-    debugLog(`🔍 CÁLCULO DETALHADO - ${projeto.Projeto}:`, 'info');
-    debugLog(`   Concluídas: ${Concluidas} × ${pesoConcluidas} = ${Concluidas * pesoConcluidas}`, 'info');
-    debugLog(`   Validação: ${Validacao} × ${pesoValidacao} = ${Validacao * pesoValidacao}`, 'info');
-    debugLog(`   Liberação: ${Liberacao} × ${pesoLiberacao} = ${Liberacao * pesoLiberacao}`, 'info');
-    debugLog(`   Execução: ${Execucao} × ${pesoExecucao} = ${Execucao * pesoExecucao}`, 'info');
-    debugLog(`   Início: ${Inicio} × ${pesoInicio} = ${Inicio * pesoInicio}`, 'info');
-    debugLog(`   Descrição: ${Descricao} × ${pesoDescricao} = ${Descricao * pesoDescricao}`, 'info');
-    debugLog(`   Total: ${Total}`, 'info');
-    debugLog(`   Pontuação: ${pontuacaoPonderada.toFixed(2)}`, 'info');
-    debugLog(`   Percentual: ${percentual.toFixed(2)}%`, 'success');
-  }
-  
-  return Math.min(Math.round(percentual), 100);
+  return Math.min(Math.round((pontuacaoPonderada / Total) * 100), 100);
 }
 
 function parseCSVLine(line) {
@@ -1200,12 +1188,8 @@ function parseCSVLine(line) {
     const nextChar = line[i + 1];
     
     if (char === '"') {
-      if (insideQuotes && nextChar === '"') {
-        current += '"';
-        i++;
-      } else {
-        insideQuotes = !insideQuotes;
-      }
+      if (insideQuotes && nextChar === '"') { current += '"'; i++; }
+      else { insideQuotes = !insideQuotes; }
     } else if (char === ',' && !insideQuotes) {
       result.push(current.trim());
       current = '';
@@ -1213,27 +1197,20 @@ function parseCSVLine(line) {
       current += char;
     }
   }
-  
   result.push(current.trim());
   return result;
 }
 
-// ========== FUNÇÕES PARA DESTRUIR GRÁFICOS COM SEGURANÇA ==========
+// ========== DESTROY CHARTS ==========
 function destroyChart(chartKey) {
   if (charts[chartKey]) {
-    try {
-      charts[chartKey].destroy();
-      debugLog(`✅ Gráfico ${chartKey} destruído`, 'success');
-    } catch (error) {
-      debugLog(`⚠️ Erro ao destruir ${chartKey}: ${error.message}`, 'warning');
-    }
+    try { charts[chartKey].destroy(); } catch (e) {}
     charts[chartKey] = null;
   }
 }
 
 function destroyAllCharts() {
   Object.keys(charts).forEach(key => destroyChart(key));
-  debugLog('🗑️ Todos os gráficos foram destruídos', 'info');
 }
 
 // ========== FETCH DATA ==========
@@ -1243,83 +1220,31 @@ async function fetchData() {
   
   loadingEl.style.display = 'block';
   if (refreshIcon) refreshIcon.classList.add('spinning');
-  
   debugLog('🔄 Iniciando carregamento...');
-  debugLog(`📊 URL: ${SHEET_CSV_URL.substring(0, 80)}...`);
   
   try {
     const url = `${SHEET_CSV_URL}&cachebust=${Date.now()}`;
-    debugLog('🌐 Fazendo fetch...');
-    
     const response = await fetch(url);
-    debugLog(`📡 Status: ${response.status}`, response.ok ? 'success' : 'error');
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     
     const csvData = await response.text();
-    debugLog(`📝 Recebido: ${csvData.length} caracteres`);
-    
     const lines = csvData.split(/\r?\n/).filter(l => l.trim());
-    debugLog(`📊 Linhas: ${lines.length}`, 'success');
-    
     if (lines.length < 2) throw new Error("Planilha vazia");
     
     const headers = parseCSVLine(lines[0]);
-    debugLog(`📋 TODOS OS HEADERS DA PLANILHA (${headers.length} colunas):`, 'info');
-    headers.forEach((h, i) => {
-      debugLog(`   Col ${i}: "${h}" → clean: "${cleanKey(h)}"`, 'info');
-    });
-    
-    // Ordem EXATA das colunas na planilha PMO:
-    // 0: Projeto
-    // 1: Status
-    // 2: Data prevista
-    // 3: Cor Data Prevista
-    // 4: Analista
-    // 5: Concluídas
-    // 6: Em validação
-    // 7: Ag. Liberação
-    // 8: Em execução
-    // 9: Ag. início
-    // 10: Ag. Descrição
-    // 11: OBS
+    debugLog(`📋 ${headers.length} colunas encontradas`, 'info');
     
     const colIdx = {
-      projeto: 0,
-      status: 1,
-      dataPrevista: 2,
-      corDataPrevista: 3,
-      analista: 4,
-      concluidas: 5,
-      validacao: 6,
-      liberacao: 7,
-      execucao: 8,
-      inicio: 9,
-      descricao: 10,
-      obs: 11
+      projeto: 0, status: 1, dataPrevista: 2, corDataPrevista: 3,
+      analista: 4, concluidas: 5, validacao: 6, liberacao: 7,
+      execucao: 8, inicio: 9, descricao: 10, obs: 11
     };
-    
-    debugLog(`🔍 Mapeamento de colunas (FIXO):`, 'info');
-    debugLog(`   Projeto: col ${colIdx.projeto}`, 'info');
-    debugLog(`   Status: col ${colIdx.status}`, 'info');
-    debugLog(`   Data Prevista: col ${colIdx.dataPrevista}`, 'info');
-    debugLog(`   Cor Data Prevista: col ${colIdx.corDataPrevista}`, 'info');
-    debugLog(`   Analista: col ${colIdx.analista}`, 'info');
-    debugLog(`   Concluídas: col ${colIdx.concluidas}`, 'info');
-    debugLog(`   Validação: col ${colIdx.validacao}`, 'info');
-    debugLog(`   Liberação: col ${colIdx.liberacao}`, 'info');
-    debugLog(`   Execução: col ${colIdx.execucao}`, 'info');
-    debugLog(`   Início: col ${colIdx.inicio}`, 'info');
-    debugLog(`   Descrição: col ${colIdx.descricao}`, 'info');
-    debugLog(`   OBS: col ${colIdx.obs}`, 'info');
     
     projectData = [];
     
     for (let i = 1; i < lines.length; i++) {
       const values = parseCSVLine(lines[i]);
-      if (colIdx.projeto < 0 || !values[colIdx.projeto]?.trim()) continue;
+      if (!values[colIdx.projeto]?.trim()) continue;
       
       const getValue = (idx, def = "") => (idx >= 0 && values[idx]) ? values[idx].trim() : def;
       const getNum = (idx) => {
@@ -1329,64 +1254,33 @@ async function fetchData() {
       };
       
       const concluidas = getNum(colIdx.concluidas);
-      const validacao = getNum(colIdx.validacao);
-      const liberacao = getNum(colIdx.liberacao);
-      const execucao = getNum(colIdx.execucao);
-      const inicio = getNum(colIdx.inicio);
-      const descricao = getNum(colIdx.descricao);
-      const total = concluidas + validacao + liberacao + execucao + inicio + descricao;
+      const validacao  = getNum(colIdx.validacao);
+      const liberacao  = getNum(colIdx.liberacao);
+      const execucao   = getNum(colIdx.execucao);
+      const inicio     = getNum(colIdx.inicio);
+      const descricao  = getNum(colIdx.descricao);
+      const total      = concluidas + validacao + liberacao + execucao + inicio + descricao;
       
-      const projeto = {
+      projectData.push({
         Projeto: getValue(colIdx.projeto),
         Status: getValue(colIdx.status, "Planejado"),
         Analista: getValue(colIdx.analista, "N/A"),
         DataPrevista: getValue(colIdx.dataPrevista, "-"),
         CorDataPrevista: getValue(colIdx.corDataPrevista, ""),
-        Concluidas: concluidas,
-        Validacao: validacao,
-        Liberacao: liberacao,
-        Execucao: execucao,
-        Inicio: inicio,
-        Descricao: descricao,
+        Concluidas: concluidas, Validacao: validacao, Liberacao: liberacao,
+        Execucao: execucao, Inicio: inicio, Descricao: descricao,
         Total: total,
         Obs: getValue(colIdx.obs, "Sem observações.")
-      };
-      
-      // Log detalhado do primeiro projeto e de "Segurança de Pagamento"
-      if (i === 1 || projeto.Projeto.toLowerCase().includes('seguranca')) {
-        debugLog(`📦 Projeto: ${projeto.Projeto}`, 'info');
-        debugLog(`   Data Prevista: ${projeto.DataPrevista}`, 'info');
-        debugLog(`   Cor Data Prevista: "${projeto.CorDataPrevista}"`, 'info');
-        debugLog(`   Concluídas: ${concluidas}, Validação: ${validacao}, Liberação: ${liberacao}`, 'info');
-        debugLog(`   Execução: ${execucao}, Início: ${inicio}, Descrição: ${descricao}`, 'info');
-        debugLog(`   Total: ${total}`, 'info');
-      }
-      
-      projectData.push(projeto);
+      });
     }
     
     debugLog(`✅ ${projectData.length} projetos carregados!`, 'success');
-    
     populateSelects();
     renderAll();
     
-    debugLog('🎉 Dashboard renderizado!', 'success');
-    
   } catch (error) {
     debugLog(`❌ ERRO: ${error.message}`, 'error');
-    
-    let msg = `Erro ao carregar dados:\n\n${error.message}\n\n`;
-    
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      msg += '🔒 SOLUÇÕES:\n\n';
-      msg += '1. Verifique se a planilha está publicada\n';
-      msg += '2. Vá em Arquivo > Compartilhar > Publicar na web\n';
-      msg += '3. Selecione a aba correta e formato CSV\n';
-      msg += '4. Clique em "Publicar"\n';
-      msg += '5. Use a URL gerada\n';
-    }
-    
-    alert(msg);
+    alert(`Erro ao carregar dados:\n\n${error.message}`);
   } finally {
     loadingEl.style.display = 'none';
     if (refreshIcon) refreshIcon.classList.remove('spinning');
@@ -1394,11 +1288,9 @@ async function fetchData() {
 }
 
 function populateSelects() {
-  // Populate project select (Curva S)
   const projectSelect = document.getElementById('projectSelect');
   projectSelect.innerHTML = '<option value="all">Visão Geral</option>';
   
-  // Populate analista select
   const analistaSelect = document.getElementById('analistaSelect');
   analistaSelect.innerHTML = '<option value="all">Todos os Analistas</option>';
   
@@ -1457,19 +1349,15 @@ function updateFilterDisplay() {
   const activeFiltersEl = document.getElementById('activeFilters');
   const filterTagsEl = document.getElementById('filterTags');
   const btnClear = document.getElementById('btnClearFilters');
-  
   const hasFilters = currentFilters.analista || currentFilters.status;
   
   if (hasFilters) {
     activeFiltersEl.style.display = 'flex';
     btnClear.style.display = 'flex';
-    
+    const labels = { andamento: 'Em Andamento', paralisado: 'Paralisado', cliente: 'Ag. Cliente', planejamento: 'Ag. Planejamento' };
     let tags = '';
     if (currentFilters.analista) tags += `<span class="filter-tag">Analista: ${currentFilters.analista}</span>`;
-    if (currentFilters.status) {
-      const labels = { andamento: 'Em Andamento', paralisado: 'Paralisado', cliente: 'Ag. Cliente' };
-      tags += `<span class="filter-tag">Status: ${labels[currentFilters.status] || currentFilters.status}</span>`;
-    }
+    if (currentFilters.status) tags += `<span class="filter-tag">Status: ${labels[currentFilters.status] || currentFilters.status}</span>`;
     filterTagsEl.innerHTML = tags;
   } else {
     activeFiltersEl.style.display = 'none';
@@ -1478,44 +1366,39 @@ function updateFilterDisplay() {
   
   document.querySelectorAll('.kpi').forEach(kpi => kpi.classList.remove('active'));
   const kpis = document.querySelectorAll('.kpi');
-  if (currentFilters.status === 'andamento') kpis[1]?.classList.add('active');
-  else if (currentFilters.status === 'paralisado') kpis[2]?.classList.add('active');
+  if (currentFilters.status === 'andamento')    kpis[1]?.classList.add('active');
+  else if (currentFilters.status === 'planejamento') kpis[2]?.classList.add('active');
   else if (currentFilters.status === 'cliente') kpis[3]?.classList.add('active');
+  else if (currentFilters.status === 'paralisado') kpis[4]?.classList.add('active');
   else if (!currentFilters.status) kpis[0]?.classList.add('active');
 }
 
 function getFilteredData() {
   let filtered = [...projectData];
   if (currentFilters.analista) filtered = filtered.filter(p => p.Analista === currentFilters.analista);
-  if (currentFilters.status) filtered = filtered.filter(p => cleanKey(p.Status).includes(currentFilters.status));
+  if (currentFilters.status)   filtered = filtered.filter(p => cleanKey(p.Status).includes(currentFilters.status));
   return filtered;
 }
 
-// ========== FILTRO DE TABELA POR PROJETO ==========
+// ========== FILTRO DE TABELA POR NOME ==========
 function filterTableByProject() {
   const input = document.getElementById('projectFilter');
   const filter = cleanKey(input.value);
   const tbody = document.getElementById('tbody');
   const rows = tbody.getElementsByTagName('tr');
-  
   let visibleCount = 0;
   
   for (let i = 0; i < rows.length; i++) {
     const projectCell = rows[i].getElementsByTagName('td')[0];
     if (projectCell) {
       const projectName = cleanKey(projectCell.textContent || projectCell.innerText);
-      if (projectName.includes(filter)) {
-        rows[i].style.display = '';
-        visibleCount++;
-      } else {
-        rows[i].style.display = 'none';
-      }
+      if (projectName.includes(filter)) { rows[i].style.display = ''; visibleCount++; }
+      else { rows[i].style.display = 'none'; }
     }
   }
   
-  // Se não houver resultados, mostrar mensagem
   if (visibleCount === 0 && filter !== '') {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="no-results"><i class="fa-solid fa-search"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Tente outro termo de busca</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="no-results"><i class="fa-solid fa-search"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Tente outro termo de busca</p></div></td></tr>`;
   }
 }
 
@@ -1530,30 +1413,26 @@ function renderAll() {
 function renderTable(p) {
   const tb = document.getElementById("tbody");
   if (p.length === 0) {
-    tb.innerHTML = `<tr><td colspan="6"><div class="no-results"><i class="fa-solid fa-inbox"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Ajuste os filtros</p></div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="5"><div class="no-results"><i class="fa-solid fa-inbox"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Ajuste os filtros</p></div></td></tr>`;
     return;
   }
   
-  tb.innerHTML = p.map(x => {
+  // Ordenar: Em Andamento > Ag. Planejamento > Ag. Cliente > Paralisado > outros
+  const sorted = [...p].sort((a, b) => getStatusOrder(a.Status) - getStatusOrder(b.Status));
+  
+  tb.innerHTML = sorted.map(x => {
     const perc = calcularEvolucaoPonderada(x);
-    const statusClass = cleanKey(x.Status).replace(/\./g, "").replace(/\s/g, '-');
+    const statusKey = cleanKey(x.Status).replace(/\./g, "").replace(/\s/g, '');
     const analistaClass = getAnalistaClass(x.Analista);
-    
-    // Escapar aspas para o onclick
     const projetoEscaped = x.Projeto.replace(/'/g, "\\'").replace(/`/g, "\\`");
-    
-    // Aplicar cor da planilha na data prevista
-    const dataStyle = x.CorDataPrevista 
-      ? `style="color: ${x.CorDataPrevista}; font-weight: 700;"` 
-      : '';
+    const dataStyle = x.CorDataPrevista ? `style="color: ${x.CorDataPrevista}; font-weight: 700;"` : '';
     
     return `<tr>
       <td><span class="project-name" onclick="openProjectModal('${projetoEscaped}')">${x.Projeto}</span></td>
       <td><span ${dataStyle}>${x.DataPrevista}</span></td>
       <td class="analista-bold ${analistaClass}">${x.Analista}</td>
-      <td><span class="badge ${statusClass}">${x.Status}</span></td>
+      <td><span class="badge ${statusKey}">${x.Status}</span></td>
       <td><div class="progress"><div class="bar"><div class="fill" style="width:${perc}%"></div></div><strong style="width:35px;text-align:right">${perc}%</strong></div></td>
-      <td><i class="fa-solid fa-circle-info" style="cursor:pointer;color:var(--blue)" onclick="openProjectModal('${projetoEscaped}')"></i></td>
     </tr>`;
   }).join("");
 }
@@ -1561,88 +1440,50 @@ function renderTable(p) {
 function renderKPIs(p) {
   document.getElementById("kTotal").innerText = p.length;
   document.getElementById("kAtivos").innerText = p.filter(x => cleanKey(x.Status).includes("andamento")).length;
-  document.getElementById("kPausados").innerText = p.filter(x => cleanKey(x.Status).includes("paralisado")).length;
+  document.getElementById("kPlanejamento").innerText = p.filter(x => cleanKey(x.Status).includes("planejamento")).length;
   document.getElementById("kCliente").innerText = p.filter(x => cleanKey(x.Status).includes("cliente")).length;
+  document.getElementById("kPausados").innerText = p.filter(x => cleanKey(x.Status).includes("paralisado")).length;
 }
 
 function renderCharts(p) {
-  if (p.length === 0) {
-    destroyAllCharts();
-    return;
-  }
-  
-  // Renderizar Status Chart
+  if (p.length === 0) { destroyAllCharts(); return; }
   renderStatusChart(p);
-  
-  // Renderizar outros gráficos
   updateAnalistaChart();
   updateCurvaS();
 }
 
 function renderStatusChart(p) {
   const statusCount = {};
-  p.forEach(x => {
-    if (x.Status) {
-      statusCount[x.Status] = (statusCount[x.Status] || 0) + 1;
-    }
-  });
+  p.forEach(x => { if (x.Status) statusCount[x.Status] = (statusCount[x.Status] || 0) + 1; });
   
-  // Destruir o gráfico de status antes de recriá-lo
   destroyChart('status');
   
-  // Status Chart
   const statusLabels = Object.keys(statusCount);
   const statusColors = statusLabels.map(s => getStatusColor(s));
-  
-  // Validar se há dados para renderizar
-  if (statusLabels.length === 0) {
-    debugLog('⚠️ Nenhum status encontrado para renderizar', 'warning');
-    return;
-  }
+  if (statusLabels.length === 0) return;
   
   const statusCanvas = document.getElementById('status');
-  if (!statusCanvas) {
-    debugLog('⚠️ Canvas de status não encontrado', 'warning');
-    return;
-  }
+  if (!statusCanvas) return;
   
   try {
     charts.status = new Chart(statusCanvas, {
       type: 'doughnut',
       data: {
         labels: statusLabels,
-        datasets: [{ 
-          data: Object.values(statusCount), 
-          backgroundColor: statusColors, 
-          borderWidth: 0, 
-          hoverOffset: 10 
-        }]
+        datasets: [{ data: Object.values(statusCount), backgroundColor: statusColors, borderWidth: 0, hoverOffset: 10 }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         cutout: '70%',
         plugins: {
-          legend: { 
-            position: 'bottom', 
-            labels: { 
-              padding: 15, 
-              usePointStyle: true, 
-              font: { size: 11, weight: '600' } 
-            } 
-          },
-          tooltip: { 
-            callbacks: { 
-              label: (ctx) => `${ctx.label}: ${ctx.parsed} projeto(s)` 
-            } 
-          }
+          legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11, weight: '600' } } },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} projeto(s)` } }
         }
       }
     });
-    
-    debugLog(`✅ Gráfico de status criado com ${statusLabels.length} categorias`, 'success');
   } catch (error) {
-    debugLog(`❌ Erro ao criar gráfico de status: ${error.message}`, 'error');
+    debugLog(`❌ Erro gráfico status: ${error.message}`, 'error');
   }
 }
 
@@ -1650,45 +1491,27 @@ function updateAnalistaChart() {
   const select = document.getElementById('analistaSelect');
   const selectedAnalista = select.value;
   
-  // Se selecionou um analista específico E o filtro atual é diferente
   if (selectedAnalista !== 'all' && currentFilters.analista !== selectedAnalista) {
     currentFilters.analista = selectedAnalista;
-    renderAll(); // Isso vai chamar updateAnalistaChart novamente, mas com o filtro já aplicado
+    renderAll();
     return;
   }
-  
-  // Se voltou para "Todos" E havia um filtro de analista
   if (selectedAnalista === 'all' && currentFilters.analista) {
     currentFilters.analista = null;
     renderAll();
     return;
   }
   
-  // Renderizar o gráfico normalmente
   let dataToShow = getFilteredData();
-  
   const analistasCount = {};
-  dataToShow.forEach(x => {
-    analistasCount[x.Analista] = (analistasCount[x.Analista] || 0) + 1;
-  });
+  dataToShow.forEach(x => { analistasCount[x.Analista] = (analistasCount[x.Analista] || 0) + 1; });
   
   const analistaLabels = Object.keys(analistasCount);
   const analistaColors = analistaLabels.map(n => getAnalistaColor(n));
   
-  // Destruir o gráfico de analistas antes de recriá-lo
   destroyChart('analistas');
-  
   const analistasCanvas = document.getElementById('analistas');
-  if (!analistasCanvas) {
-    debugLog('⚠️ Canvas de analistas não encontrado', 'warning');
-    return;
-  }
-  
-  // Validar se há dados
-  if (analistaLabels.length === 0) {
-    debugLog('⚠️ Nenhum analista encontrado para renderizar', 'warning');
-    return;
-  }
+  if (!analistasCanvas || analistaLabels.length === 0) return;
   
   try {
     charts.analistas = new Chart(analistasCanvas, {
@@ -1701,17 +1524,12 @@ function updateAnalistaChart() {
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} projeto(s)` } }
-        },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} projeto(s)` } } },
         scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
-    
-    debugLog(`✅ Gráfico de analistas criado com ${analistaLabels.length} analistas`, 'success');
   } catch (error) {
-    debugLog(`❌ Erro ao criar gráfico de analistas: ${error.message}`, 'error');
+    debugLog(`❌ Erro gráfico analistas: ${error.message}`, 'error');
   }
 }
 
@@ -1731,10 +1549,8 @@ function updateCurvaS() {
     diferenca = 100 - media;
     const semaforo = getSemaforoColor(diferenca);
     cor = semaforo === 'verde' ? '#10b981' : semaforo === 'amarelo' ? '#f59e0b' : '#ef4444';
-    
     data = [0, media];
     label = 'Realizado (Média Geral)';
-    
     curvaInfoEl.innerHTML = `<span class="semaforo-indicator semaforo-${semaforo}"></span><strong>Diferença: ${diferenca.toFixed(1)}%</strong> entre planejado e realizado`;
     curvaInfoEl.classList.add('show');
   } else {
@@ -1744,26 +1560,16 @@ function updateCurvaS() {
       diferenca = 100 - perc;
       const semaforo = getSemaforoColor(diferenca);
       cor = semaforo === 'verde' ? '#10b981' : semaforo === 'amarelo' ? '#f59e0b' : '#ef4444';
-      
       data = [0, perc];
       label = `Realizado (${projeto.Projeto})`;
-      
       curvaInfoEl.innerHTML = `<span class="semaforo-indicator semaforo-${semaforo}"></span><strong>Diferença: ${diferenca.toFixed(1)}%</strong> entre planejado e realizado | <strong>${projeto.Concluidas}/${projeto.Total}</strong> atividades`;
       curvaInfoEl.classList.add('show');
-    } else {
-      debugLog('⚠️ Projeto não encontrado para Curva S', 'warning');
-      return;
-    }
+    } else { return; }
   }
   
-  // Destruir o gráfico de curva S antes de recriá-lo
   destroyChart('curve');
-  
   const curveCanvas = document.getElementById('curve');
-  if (!curveCanvas) {
-    debugLog('⚠️ Canvas de curva S não encontrado', 'warning');
-    return;
-  }
+  if (!curveCanvas) return;
   
   try {
     charts.curve = new Chart(curveCanvas, {
@@ -1785,28 +1591,21 @@ function updateCurvaS() {
         scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } }
       }
     });
-    
-    debugLog(`✅ Curva S criada para: ${selectedProject === 'all' ? 'Visão Geral' : selectedProject}`, 'success');
   } catch (error) {
-    debugLog(`❌ Erro ao criar Curva S: ${error.message}`, 'error');
+    debugLog(`❌ Erro Curva S: ${error.message}`, 'error');
   }
 }
 
 // ========== MODAL ==========
 function openProjectModal(projectName) {
   const projeto = projectData.find(p => p.Projeto === projectName);
-  
   if (!projeto) return;
   
   document.getElementById("mTitle").textContent = projeto.Projeto;
   document.getElementById("mAnalista").textContent = projeto.Analista;
   document.getElementById("mStatus").textContent = projeto.Status;
   document.getElementById("mData").textContent = projeto.DataPrevista;
-  
-  // Calcular e exibir evolução ponderada
-  const evolucaoPonderada = calcularEvolucaoPonderada(projeto);
-  document.getElementById("mEvolucao").textContent = `${evolucaoPonderada}%`;
-  
+  document.getElementById("mEvolucao").textContent = `${calcularEvolucaoPonderada(projeto)}%`;
   document.getElementById("mConcluidas").textContent = projeto.Concluidas;
   document.getElementById("mValidacao").textContent = projeto.Validacao;
   document.getElementById("mLiberacao").textContent = projeto.Liberacao;
@@ -1815,7 +1614,6 @@ function openProjectModal(projectName) {
   document.getElementById("mDescricao").textContent = projeto.Descricao;
   document.getElementById("mTotal").textContent = projeto.Total;
   document.getElementById("mObs").textContent = projeto.Obs;
-  
   document.getElementById("modal").style.display = "flex";
 }
 
@@ -1830,10 +1628,7 @@ window.onclick = e => {
 // ========== INIT ==========
 window.onload = fetchData;
 setInterval(fetchData, 300000);
-window.addEventListener('beforeunload', () => {
-  destroyAllCharts();
-  clearAllFilters();
-});
+window.addEventListener('beforeunload', () => { destroyAllCharts(); clearAllFilters(); });
 </script>
 </body>
 </html>
