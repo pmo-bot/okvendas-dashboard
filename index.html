@@ -585,15 +585,12 @@ tr:hover{background:#f8fafc}
   line-height: 1.7;
   box-shadow: 0 8px 32px rgba(0,0,0,0.35);
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
   z-index: 9999;
   white-space: normal;
   display: none;
 }
 
 .info-tooltip-box.tooltip-visible {
-  opacity: 1;
   display: block;
 }
 
@@ -608,12 +605,12 @@ tr:hover{background:#f8fafc}
 
 .info-tooltip-box.arrow-top::before {
   top: -5px;
-  left: 16px;
+  left: 14px;
 }
 
 .info-tooltip-box.arrow-bottom::before {
   bottom: -5px;
-  left: 16px;
+  left: 14px;
 }
 
 .info-tooltip-box strong {
@@ -2062,87 +2059,67 @@ window.onclick = e => {
 }
 
 // ========== SMART TOOLTIP ==========
-(function() {
-  function initTooltip() {
-    const icon = document.getElementById('tooltipIcon');
-    const box  = document.getElementById('tooltipBox');
-    if (!icon || !box) return;
+function initTooltip() {
+  const icon = document.getElementById('tooltipIcon');
+  const box  = document.getElementById('tooltipBox');
+  if (!icon || !box) return;
 
-    function showTooltip() {
-      const iconRect = icon.getBoundingClientRect();
-      const tooltipW = 270;
-      const tooltipH = 260; // approximate height
-      const margin   = 10;
-      const vpW = window.innerWidth;
-      const vpH = window.innerHeight;
+  function positionAndShow() {
+    const r   = icon.getBoundingClientRect();
+    const vw  = window.innerWidth;
+    const vh  = window.innerHeight;
+    const W   = 270;
+    const GAP = 10;
 
-      // Show temporarily invisible to measure
-      box.style.visibility = 'hidden';
-      box.style.display = 'block';
-      const actualH = box.offsetHeight || tooltipH;
-      box.style.display = 'none';
-      box.style.visibility = '';
+    // First show invisible to get real height
+    box.style.visibility = 'hidden';
+    box.classList.add('tooltip-visible');
+    const H = box.offsetHeight;
+    box.classList.remove('tooltip-visible');
+    box.style.visibility = '';
 
-      // Decide vertical: prefer below, fall back to above
-      let top, arrowDir;
-      const spaceBelow = vpH - iconRect.bottom - margin;
-      const spaceAbove = iconRect.top - margin;
+    // Vertical: below icon if space, otherwise above
+    const spaceBelow = vh - r.bottom - GAP;
+    const goBelow = spaceBelow >= H || spaceBelow >= r.top - GAP;
+    const top = goBelow ? r.bottom + GAP : r.top - H - GAP;
+    const arrowDir = goBelow ? 'arrow-top' : 'arrow-bottom';
 
-      if (spaceBelow >= actualH || spaceBelow >= spaceAbove) {
-        top = iconRect.bottom + margin;
-        arrowDir = 'arrow-top';
-      } else {
-        top = iconRect.top - actualH - margin;
-        arrowDir = 'arrow-bottom';
-      }
+    // Horizontal: align to icon left, clamp inside viewport
+    let left = r.left;
+    if (left + W > vw - GAP) left = vw - W - GAP;
+    if (left < GAP) left = GAP;
 
-      // Decide horizontal: align left of icon, clamp to viewport
-      let left = iconRect.left;
-      if (left + tooltipW > vpW - margin) {
-        left = vpW - tooltipW - margin;
-      }
-      if (left < margin) left = margin;
+    // Arrow horizontal offset relative to tooltip box
+    const arrowLeft = Math.max(8, Math.min(r.left + r.width / 2 - left - 5, W - 20));
 
-      box.style.top  = `${top}px`;
-      box.style.left = `${left}px`;
-      box.classList.remove('arrow-top', 'arrow-bottom');
-      box.classList.add(arrowDir);
+    box.style.top  = top  + 'px';
+    box.style.left = left + 'px';
+    box.classList.remove('arrow-top', 'arrow-bottom');
+    box.classList.add(arrowDir);
 
-      // Arrow horizontal position relative to box
-      const arrowLeft = Math.max(8, iconRect.left + iconRect.width / 2 - left - 5);
-      box.style.setProperty('--arrow-left', `${arrowLeft}px`);
-      box.querySelectorAll('::before') // won't work, use direct style
-      // patch arrow via a CSS var approach — just set left on ::before via inline style trick
-      box.dataset.arrowLeft = arrowLeft;
-      const style = box.querySelector('style') || (() => {
-        const s = document.createElement('style');
-        box.appendChild(s); return s;
-      })();
-      style.textContent = `#tooltipBox::before { left: ${arrowLeft}px !important; }`;
-
-      box.classList.add('tooltip-visible');
+    // Inject dynamic arrow position
+    let arrowStyle = document.getElementById('tooltipArrowStyle');
+    if (!arrowStyle) {
+      arrowStyle = document.createElement('style');
+      arrowStyle.id = 'tooltipArrowStyle';
+      document.head.appendChild(arrowStyle);
     }
+    arrowStyle.textContent = '#tooltipBox::before { left: ' + arrowLeft + 'px !important; }';
 
-    function hideTooltip() {
-      box.classList.remove('tooltip-visible');
-    }
-
-    icon.addEventListener('mouseenter', showTooltip);
-    icon.addEventListener('mouseleave', hideTooltip);
-    // Also hide on scroll
-    window.addEventListener('scroll', hideTooltip, { passive: true });
+    box.classList.add('tooltip-visible');
   }
 
-  // Init after DOM ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTooltip);
-  } else {
-    initTooltip();
+  function hide() {
+    box.classList.remove('tooltip-visible');
   }
-})();
+
+  icon.addEventListener('mouseenter', positionAndShow);
+  icon.addEventListener('mouseleave',  hide);
+  window.addEventListener('scroll', hide, { passive: true });
+}
 
 // ========== INIT ==========
-window.onload = fetchData;
+window.onload = function() { fetchData(); initTooltip(); };
 setInterval(fetchData, 300000);
 window.addEventListener('beforeunload', () => { destroyAllCharts(); clearAllFilters(); });
 </script>
