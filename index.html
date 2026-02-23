@@ -504,6 +504,133 @@ tr:hover{background:#f8fafc}
   background: linear-gradient(90deg, #ef4444, #dc2626) !important;
 }
 
+/* ===== EVOLUÇÃO GERAL BADGE ===== */
+.evolucao-geral-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #bae6fd;
+  border-radius: 12px;
+  padding: 8px 16px;
+  flex-shrink: 0;
+}
+
+.evolucao-geral-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.evolucao-geral-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue);
+  line-height: 1;
+}
+
+.evolucao-geral-bar-wrap {
+  width: 80px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.evolucao-geral-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tooltip do "i" */
+.info-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.info-tooltip-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  font-style: normal;
+  font-family: 'Inter', sans-serif;
+}
+
+.info-tooltip-icon:hover {
+  background: #0284c7;
+}
+
+.info-tooltip-box {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: #1e293b;
+  color: #f1f5f9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 260px;
+  font-size: 12px;
+  line-height: 1.7;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 100;
+  white-space: normal;
+}
+
+.info-tooltip-box::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 4px;
+  border: 6px solid transparent;
+  border-top-color: #1e293b;
+}
+
+.info-tooltip-wrapper:hover .info-tooltip-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.info-tooltip-box strong {
+  color: #38bdf8;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.info-tooltip-box .tip-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  border-bottom: 1px solid #334155;
+}
+
+.info-tooltip-box .tip-row:last-child {
+  border-bottom: none;
+}
+
+.info-tooltip-box .tip-pct {
+  color: #10b981;
+  font-weight: 700;
+}
+
 /* ===== VER MAIS ===== */
 .ver-mais-wrapper {
   text-align: center;
@@ -987,8 +1114,39 @@ tr.hidden-row.visible {
 </div>
 
 <div class="table-box">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-  <h2 class="table-title" style="margin-bottom: 0;">Detalhamento de Projetos</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+
+  <!-- Título + evolução geral -->
+  <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+    <h2 class="table-title" style="margin-bottom: 0;">Detalhamento de Projetos</h2>
+
+    <!-- Badge evolução geral -->
+    <div class="evolucao-geral-badge">
+      <div>
+        <div class="evolucao-geral-label">Evolução Geral</div>
+        <div class="evolucao-geral-value" id="evolucaoGeralValue">—</div>
+      </div>
+      <div class="evolucao-geral-bar-wrap">
+        <div class="evolucao-geral-bar-fill" id="evolucaoGeralBar" style="width:0%"></div>
+      </div>
+      <!-- Ícone i com tooltip -->
+      <div class="info-tooltip-wrapper">
+        <span class="info-tooltip-icon">i</span>
+        <div class="info-tooltip-box">
+          <strong>Como é calculada a Evolução Geral?</strong>
+          Média ponderada de todas as tarefas de todos os projetos visíveis, considerando o estágio de cada tarefa:
+          <div class="tip-row"><span>✅ Concluídas</span><span class="tip-pct">100%</span></div>
+          <div class="tip-row"><span>🔍 Em Validação</span><span class="tip-pct">85%</span></div>
+          <div class="tip-row"><span>🔓 Ag. Liberação</span><span class="tip-pct">60%</span></div>
+          <div class="tip-row"><span>⚙️ Em Execução</span><span class="tip-pct">40%</span></div>
+          <div class="tip-row"><span>⏳ Ag. Início</span><span class="tip-pct">15%</span></div>
+          <div class="tip-row"><span>📄 Ag. Descrição</span><span class="tip-pct">5%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Busca -->
   <div style="display: flex; align-items: center; gap: 10px;">
     <i class="fa-solid fa-search" style="color: var(--muted);"></i>
     <input 
@@ -1674,6 +1832,45 @@ function renderKPIs(p) {
   document.getElementById("kPlanejamento").innerText = p.filter(x => cleanKey(x.Status).includes("planejamento")).length;
   document.getElementById("kCliente").innerText = p.filter(x => cleanKey(x.Status).includes("cliente")).length;
   document.getElementById("kPausados").innerText = p.filter(x => cleanKey(x.Status).includes("paralisado")).length;
+  
+  // Evolução geral: média ponderada de todos os projetos filtrados
+  renderEvolucaoGeral(getFilteredData());
+}
+
+function renderEvolucaoGeral(projetos) {
+  const el = document.getElementById("evolucaoGeralValue");
+  const bar = document.getElementById("evolucaoGeralBar");
+  if (!el || !bar) return;
+  
+  if (!projetos || projetos.length === 0) {
+    el.textContent = '—';
+    bar.style.width = '0%';
+    return;
+  }
+  
+  // Soma ponderada global (todas as tarefas, não média de médias)
+  let totalPonderado = 0;
+  let totalTarefas = 0;
+  
+  projetos.forEach(p => {
+    totalPonderado += (p.Concluidas * 1.00) + (p.Validacao * 0.85) + (p.Liberacao * 0.60)
+                    + (p.Execucao * 0.40) + (p.Inicio * 0.15) + (p.Descricao * 0.05);
+    totalTarefas += p.Total;
+  });
+  
+  const pct = totalTarefas > 0 ? Math.min(Math.round((totalPonderado / totalTarefas) * 100), 100) : 0;
+  
+  el.textContent = `${pct}%`;
+  bar.style.width = `${pct}%`;
+  
+  // Cor da barra conforme progresso
+  if (pct >= 75) {
+    bar.style.background = 'linear-gradient(90deg, #0ea5e9, #10b981)';
+  } else if (pct >= 40) {
+    bar.style.background = 'linear-gradient(90deg, #f59e0b, #0ea5e9)';
+  } else {
+    bar.style.background = 'linear-gradient(90deg, #ef4444, #f59e0b)';
+  }
 }
 
 function renderCharts(p) {
