@@ -575,37 +575,45 @@ tr:hover{background:#f8fafc}
 }
 
 .info-tooltip-box {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  right: 0;
+  position: fixed;
   background: #1e293b;
   color: #f1f5f9;
   border-radius: 12px;
   padding: 14px 16px;
-  width: 260px;
+  width: 270px;
   font-size: 12px;
   line-height: 1.7;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
   pointer-events: none;
   opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.2s, transform 0.2s;
-  z-index: 100;
+  transition: opacity 0.2s;
+  z-index: 9999;
   white-space: normal;
+  display: none;
 }
 
-.info-tooltip-box::after {
+.info-tooltip-box.tooltip-visible {
+  opacity: 1;
+  display: block;
+}
+
+.info-tooltip-box::before {
   content: '';
   position: absolute;
-  top: 100%;
-  right: 4px;
-  border: 6px solid transparent;
-  border-top-color: #1e293b;
+  width: 10px;
+  height: 10px;
+  background: #1e293b;
+  transform: rotate(45deg);
 }
 
-.info-tooltip-wrapper:hover .info-tooltip-box {
-  opacity: 1;
-  transform: translateY(0);
+.info-tooltip-box.arrow-top::before {
+  top: -5px;
+  left: 16px;
+}
+
+.info-tooltip-box.arrow-bottom::before {
+  bottom: -5px;
+  left: 16px;
 }
 
 .info-tooltip-box strong {
@@ -1131,8 +1139,8 @@ tr.hidden-row.visible {
       </div>
       <!-- Ícone i com tooltip -->
       <div class="info-tooltip-wrapper">
-        <span class="info-tooltip-icon">i</span>
-        <div class="info-tooltip-box">
+        <span class="info-tooltip-icon" id="tooltipIcon">i</span>
+        <div class="info-tooltip-box" id="tooltipBox">
           <strong>Como é calculada a Evolução Geral?</strong>
           Média ponderada de todas as tarefas de todos os projetos visíveis, considerando o estágio de cada tarefa:
           <div class="tip-row"><span>✅ Concluídas</span><span class="tip-pct">100%</span></div>
@@ -2052,6 +2060,86 @@ function closeModal() {
 window.onclick = e => {
   if (e.target == document.getElementById("modal")) closeModal();
 }
+
+// ========== SMART TOOLTIP ==========
+(function() {
+  function initTooltip() {
+    const icon = document.getElementById('tooltipIcon');
+    const box  = document.getElementById('tooltipBox');
+    if (!icon || !box) return;
+
+    function showTooltip() {
+      const iconRect = icon.getBoundingClientRect();
+      const tooltipW = 270;
+      const tooltipH = 260; // approximate height
+      const margin   = 10;
+      const vpW = window.innerWidth;
+      const vpH = window.innerHeight;
+
+      // Show temporarily invisible to measure
+      box.style.visibility = 'hidden';
+      box.style.display = 'block';
+      const actualH = box.offsetHeight || tooltipH;
+      box.style.display = 'none';
+      box.style.visibility = '';
+
+      // Decide vertical: prefer below, fall back to above
+      let top, arrowDir;
+      const spaceBelow = vpH - iconRect.bottom - margin;
+      const spaceAbove = iconRect.top - margin;
+
+      if (spaceBelow >= actualH || spaceBelow >= spaceAbove) {
+        top = iconRect.bottom + margin;
+        arrowDir = 'arrow-top';
+      } else {
+        top = iconRect.top - actualH - margin;
+        arrowDir = 'arrow-bottom';
+      }
+
+      // Decide horizontal: align left of icon, clamp to viewport
+      let left = iconRect.left;
+      if (left + tooltipW > vpW - margin) {
+        left = vpW - tooltipW - margin;
+      }
+      if (left < margin) left = margin;
+
+      box.style.top  = `${top}px`;
+      box.style.left = `${left}px`;
+      box.classList.remove('arrow-top', 'arrow-bottom');
+      box.classList.add(arrowDir);
+
+      // Arrow horizontal position relative to box
+      const arrowLeft = Math.max(8, iconRect.left + iconRect.width / 2 - left - 5);
+      box.style.setProperty('--arrow-left', `${arrowLeft}px`);
+      box.querySelectorAll('::before') // won't work, use direct style
+      // patch arrow via a CSS var approach — just set left on ::before via inline style trick
+      box.dataset.arrowLeft = arrowLeft;
+      const style = box.querySelector('style') || (() => {
+        const s = document.createElement('style');
+        box.appendChild(s); return s;
+      })();
+      style.textContent = `#tooltipBox::before { left: ${arrowLeft}px !important; }`;
+
+      box.classList.add('tooltip-visible');
+    }
+
+    function hideTooltip() {
+      box.classList.remove('tooltip-visible');
+    }
+
+    icon.addEventListener('mouseenter', showTooltip);
+    icon.addEventListener('mouseleave', hideTooltip);
+    // Also hide on scroll
+    window.addEventListener('scroll', hideTooltip, { passive: true });
+  }
+
+  // Init after DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTooltip);
+  } else {
+    initTooltip();
+  }
+})();
 
 // ========== INIT ==========
 window.onload = fetchData;
