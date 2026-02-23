@@ -43,7 +43,6 @@
   --status-planejado-text: #475569;
   --status-concluido-bg: #dbeafe;
   --status-concluido-text: #1e40af;
-  /* Ag. Planejamento - laranja âmbar */
   --status-agplanejamento-bg: #fff7ed;
   --status-agplanejamento-text: #c2410c;
 }
@@ -162,7 +161,6 @@ header span{
   gap: 8px;
 }
 
-/* KPIs: 5 colunas com minmax menor para caber 5 */
 .kpis{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -339,7 +337,7 @@ table{
   width:100%;
   border-collapse:collapse;
   font-size:14px;
-  min-width: 750px;
+  min-width: 600px;
 }
 
 th{
@@ -355,23 +353,46 @@ th{
   border-bottom:2px solid var(--border);
 }
 
-/* 5 colunas agora (sem Info) */
-th:nth-child(1) { width: 25%; }
-th:nth-child(2) { width: 14%; }
+/* 4 colunas: Projeto, Data Prevista, Status, Evolução */
+th:nth-child(1) { width: 35%; }
+th:nth-child(2) { width: 16%; }
 th:nth-child(3) { width: 14%; text-align: center; }
-th:nth-child(4) { width: 14%; text-align: center; }
-th:nth-child(5) { width: 33%; }
+th:nth-child(4) { width: 35%; }
 
 td{
   padding:14px 12px;
   border-bottom:1px solid #f1f5f9;
 }
 
-td:nth-child(3), td:nth-child(4) {
+td:nth-child(3) {
   text-align: center;
 }
 
 tr:hover{background:#f8fafc}
+
+/* ===== PIPE INDICATOR ===== */
+.project-cell {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.project-pipe {
+  width: 4px;
+  height: 36px;
+  border-radius: 4px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  background: var(--orange);
+}
+
+.project-pipe.pipe-andamento   { background: var(--orange); }
+.project-pipe.pipe-paralisado  { background: var(--red); }
+.project-pipe.pipe-cliente     { background: var(--purple); }
+.project-pipe.pipe-planejamento{ background: var(--yellow); }
+.project-pipe.pipe-planejado   { background: var(--muted); }
+.project-pipe.pipe-concluido   { background: var(--blue); }
+.project-pipe.pipe-default     { background: var(--orange); }
 
 .project-name {
   cursor: pointer;
@@ -383,6 +404,24 @@ tr:hover{background:#f8fafc}
 .project-name:hover {
   text-decoration: underline;
   color: var(--text);
+}
+
+/* ===== DATA PREVISTA + PRAZO VENCIDO ===== */
+.data-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prazo-vencido-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .badge{
@@ -420,7 +459,6 @@ tr:hover{background:#f8fafc}
   color:var(--status-concluido-text);
 }
 
-/* Ag. Planejamento */
 .badge.agplanejamento,
 .badge.ag-planejamento,
 .badge.aguardandoplanejamento,
@@ -459,6 +497,63 @@ tr:hover{background:#f8fafc}
   background:linear-gradient(90deg, var(--blue), var(--green));
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius:10px;
+}
+
+/* Fill vermelha quando prazo vencido */
+.fill.fill-overdue {
+  background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+}
+
+/* ===== VER MAIS ===== */
+.ver-mais-wrapper {
+  text-align: center;
+  padding: 20px 0 4px;
+}
+
+.btn-ver-mais {
+  background: var(--panel);
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  padding: 10px 28px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.2px;
+}
+
+.btn-ver-mais:hover {
+  background: var(--blue);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-ver-mais i {
+  transition: transform 0.3s;
+}
+
+.btn-ver-mais.expanded i {
+  transform: rotate(180deg);
+}
+
+/* hidden rows */
+tr.hidden-row {
+  display: none;
+}
+
+tr.hidden-row.visible {
+  display: table-row;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* MODAL */
@@ -912,7 +1007,6 @@ tr:hover{background:#f8fafc}
 <tr>
   <th>Projeto</th>
   <th>Data Prevista</th>
-  <th>Analista</th>
   <th>Status</th>
   <th style="position: relative;">
     Evolução 
@@ -930,6 +1024,15 @@ tr:hover{background:#f8fafc}
 </thead>
 <tbody id="tbody"></tbody>
 </table>
+
+<!-- VER MAIS -->
+<div class="ver-mais-wrapper" id="verMaisWrapper" style="display:none;">
+  <button class="btn-ver-mais" id="btnVerMais" onclick="toggleVerMais()">
+    <span id="verMaisLabel">Ver mais projetos</span>
+    <i class="fa-solid fa-chevron-down" id="verMaisIcon"></i>
+  </button>
+</div>
+
 </div>
 
 </div>
@@ -1044,13 +1147,15 @@ tr:hover{background:#f8fafc}
 // ========== CONFIGURAÇÃO ==========
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSN6220bHIwZ9pzMZkhQ1hBT32sofXNn-FSvJYDNGFVKNCtEhpTqF3yg4zz-p25nALcm1J33QeLR_pn/pub?gid=378165818&single=true&output=csv';
 
+const ROWS_VISIBLE_INITIALLY = 10;
+let showingAll = false;
+
 let projectData = [];
 let charts = {};
 let currentFilters = { analista: null, status: null };
 let isFetching = false;
 
 // ========== ORDENAÇÃO DE STATUS ==========
-// Prioridade: Em Andamento (1) > Ag. Planejamento (2) > Ag. Cliente (3) > Paralisado (4) > outros (5)
 function getStatusOrder(status) {
   const s = cleanKey(status);
   if (s.includes('andamento')) return 1;
@@ -1157,10 +1262,29 @@ function getStatusColor(status) {
   return '#f59e0b';
 }
 
+// Retorna a classe CSS do pipe com base no status
+function getPipeClass(status) {
+  const s = cleanKey(status);
+  if (s.includes('andamento')) return 'pipe-andamento';
+  if (s.includes('paralisado')) return 'pipe-paralisado';
+  if (s.includes('cliente')) return 'pipe-cliente';
+  if (s.includes('planejamento')) return 'pipe-planejamento';
+  if (s.includes('planejado')) return 'pipe-planejado';
+  if (s.includes('concluido')) return 'pipe-concluido';
+  return 'pipe-default';
+}
+
 function getSemaforoColor(diferenca) {
   if (Math.abs(diferenca) <= 10) return 'verde';
   if (Math.abs(diferenca) <= 25) return 'amarelo';
   return 'vermelho';
+}
+
+function isOverdue(corDataPrevista) {
+  if (!corDataPrevista) return false;
+  // Normaliza a cor para comparação
+  const cor = corDataPrevista.trim().toLowerCase().replace(/\s/g, '');
+  return cor === '#ff0000' || cor === '#ff0000' || cor === 'red' || cor === 'rgb(255,0,0)';
 }
 
 // ========== CÁLCULO PONDERADO ==========
@@ -1216,7 +1340,6 @@ function destroyAllCharts() {
 
 // ========== FETCH DATA ==========
 async function fetchData() {
-  // Evita chamadas simultâneas
   if (isFetching) {
     debugLog('⏳ Já está carregando, aguarde...', 'warning');
     return;
@@ -1238,7 +1361,6 @@ async function fetchData() {
   debugLog('🔄 Iniciando carregamento...');
   
   try {
-    // Cachebust na URL para forçar nova requisição ao Google Sheets
     const cacheBust = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const url = `${SHEET_CSV_URL}&cachebust=${cacheBust}`;
     const response = await fetch(url, { cache: 'no-store' });
@@ -1354,11 +1476,13 @@ function clearAllFilters() {
   document.getElementById('projectSelect').value = 'all';
   document.getElementById('analistaSelect').value = 'all';
   document.getElementById('projectFilter').value = '';
+  showingAll = false;
   updateFilters();
   scrollToTop();
 }
 
 function updateFilters() {
+  showingAll = false; // reset pagination on filter change
   renderAll();
   updateFilterDisplay();
   if (currentFilters.analista || currentFilters.status) {
@@ -1407,6 +1531,14 @@ function getFilteredData() {
 function filterTableByProject() {
   const input = document.getElementById('projectFilter');
   const filter = cleanKey(input.value);
+  
+  if (!filter) {
+    // Se limpou o filtro, volta à paginação normal
+    applyVerMaisVisibility();
+    return;
+  }
+  
+  // Quando há busca por texto, mostra todas as linhas que correspondem
   const tbody = document.getElementById('tbody');
   const rows = tbody.getElementsByTagName('tr');
   let visibleCount = 0;
@@ -1415,13 +1547,74 @@ function filterTableByProject() {
     const projectCell = rows[i].getElementsByTagName('td')[0];
     if (projectCell) {
       const projectName = cleanKey(projectCell.textContent || projectCell.innerText);
-      if (projectName.includes(filter)) { rows[i].style.display = ''; visibleCount++; }
-      else { rows[i].style.display = 'none'; }
+      if (projectName.includes(filter)) {
+        rows[i].style.display = '';
+        rows[i].classList.remove('hidden-row');
+        visibleCount++;
+      } else {
+        rows[i].style.display = 'none';
+      }
     }
   }
   
-  if (visibleCount === 0 && filter !== '') {
-    tbody.innerHTML = `<tr><td colspan="5"><div class="no-results"><i class="fa-solid fa-search"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Tente outro termo de busca</p></div></td></tr>`;
+  document.getElementById('verMaisWrapper').style.display = 'none';
+  
+  if (visibleCount === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="no-results"><i class="fa-solid fa-search"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Tente outro termo de busca</p></div></td></tr>`;
+  }
+}
+
+// ========== VER MAIS ==========
+function toggleVerMais() {
+  showingAll = !showingAll;
+  applyVerMaisVisibility();
+}
+
+function applyVerMaisVisibility() {
+  const tbody = document.getElementById('tbody');
+  const rows = tbody.getElementsByTagName('tr');
+  const verMaisWrapper = document.getElementById('verMaisWrapper');
+  const btnVerMais = document.getElementById('btnVerMais');
+  const verMaisLabel = document.getElementById('verMaisLabel');
+  const verMaisIcon = document.getElementById('verMaisIcon');
+  
+  const totalRows = rows.length;
+  
+  if (totalRows <= ROWS_VISIBLE_INITIALLY) {
+    // Menos de 10 linhas: mostra tudo, esconde botão
+    for (let i = 0; i < rows.length; i++) {
+      rows[i].style.display = '';
+      rows[i].classList.remove('hidden-row', 'visible');
+    }
+    verMaisWrapper.style.display = 'none';
+    return;
+  }
+  
+  for (let i = 0; i < rows.length; i++) {
+    if (i < ROWS_VISIBLE_INITIALLY) {
+      rows[i].style.display = '';
+      rows[i].classList.remove('hidden-row', 'visible');
+    } else {
+      if (showingAll) {
+        rows[i].classList.add('hidden-row', 'visible');
+        rows[i].style.display = '';
+      } else {
+        rows[i].classList.add('hidden-row');
+        rows[i].classList.remove('visible');
+        rows[i].style.display = 'none';
+      }
+    }
+  }
+  
+  verMaisWrapper.style.display = 'block';
+  
+  const remaining = totalRows - ROWS_VISIBLE_INITIALLY;
+  if (showingAll) {
+    verMaisLabel.textContent = 'Ver menos';
+    btnVerMais.classList.add('expanded');
+  } else {
+    verMaisLabel.textContent = `Ver mais ${remaining} projeto${remaining !== 1 ? 's' : ''}`;
+    btnVerMais.classList.remove('expanded');
   }
 }
 
@@ -1436,28 +1629,43 @@ function renderAll() {
 function renderTable(p) {
   const tb = document.getElementById("tbody");
   if (p.length === 0) {
-    tb.innerHTML = `<tr><td colspan="5"><div class="no-results"><i class="fa-solid fa-inbox"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Ajuste os filtros</p></div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="4"><div class="no-results"><i class="fa-solid fa-inbox"></i><h3>Nenhum projeto encontrado</h3><p style="margin-top:8px;font-size:13px">Ajuste os filtros</p></div></td></tr>`;
+    document.getElementById('verMaisWrapper').style.display = 'none';
     return;
   }
   
-  // Ordenar: Em Andamento > Ag. Planejamento > Ag. Cliente > Paralisado > outros
+  // Ordenar por status
   const sorted = [...p].sort((a, b) => getStatusOrder(a.Status) - getStatusOrder(b.Status));
   
   tb.innerHTML = sorted.map(x => {
     const perc = calcularEvolucaoPonderada(x);
     const statusKey = cleanKey(x.Status).replace(/\./g, "").replace(/\s/g, '');
-    const analistaClass = getAnalistaClass(x.Analista);
+    const pipeClass = getPipeClass(x.Status);
     const projetoEscaped = x.Projeto.replace(/'/g, "\\'").replace(/`/g, "\\`");
+    const overdue = isOverdue(x.CorDataPrevista);
     const dataStyle = x.CorDataPrevista ? `style="color: ${x.CorDataPrevista}; font-weight: 700;"` : '';
+    const fillClass = overdue ? 'fill fill-overdue' : 'fill';
     
     return `<tr>
-      <td><span class="project-name" onclick="openProjectModal('${projetoEscaped}')">${x.Projeto}</span></td>
-      <td><span ${dataStyle}>${x.DataPrevista}</span></td>
-      <td class="analista-bold ${analistaClass}">${x.Analista}</td>
+      <td>
+        <div class="project-cell">
+          <div class="project-pipe ${pipeClass}"></div>
+          <span class="project-name" onclick="openProjectModal('${projetoEscaped}')">${x.Projeto}</span>
+        </div>
+      </td>
+      <td>
+        <div class="data-cell">
+          <span ${dataStyle}>${x.DataPrevista}</span>
+          ${overdue ? `<span class="prazo-vencido-label"><i class="fa-solid fa-triangle-exclamation"></i> Prazo vencido</span>` : ''}
+        </div>
+      </td>
       <td><span class="badge ${statusKey}">${x.Status}</span></td>
-      <td><div class="progress"><div class="bar"><div class="fill" style="width:${perc}%"></div></div><strong style="width:35px;text-align:right">${perc}%</strong></div></td>
+      <td><div class="progress"><div class="bar"><div class="${fillClass}" style="width:${perc}%"></div></div><strong style="width:35px;text-align:right">${perc}%</strong></div></td>
     </tr>`;
   }).join("");
+  
+  // Aplica paginação após renderizar
+  applyVerMaisVisibility();
 }
 
 function renderKPIs(p) {
